@@ -4,6 +4,12 @@
 <div id="game-container" style="text-align: center"></div>
 <div>
     <div class="row">
+        <div class="col-md-12" style="margin-bottom: 10px;">
+            <a href="/interaction-graph?name={{ request.args.get('name', '') }}" class="btn btn-success" target="_blank">查看角色互動視覺化</a>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-md-12" style="border: solid; padding: 1em; padding-left:2em; padding-right:2em; border-radius: 5px;">
             <div class="row" style="display: flex; flex-wrap: wrap; margin: -0.5em;">
                 {% for p in persona_names %}

@@ -27,16 +27,16 @@ ollama serve
 
 ## 開启API
 
-Windows系统启動服務前需要先配置系统环境變量，否則访問API服務报403错误：
+Windows系统启動服務前需要先配置系统環境變量，否則访問API服務报403错误：
 ```
 OLLAMA_HOST=0.0.0.0
 OLLAMA_ORIGINS=*
 ```
 配置方法：
-右键“我的電腦”->属性->高級系统設置->环境變量->系统變量->新建。
-在`變量名`和`變量值`中分别填入`OLLAMA_HOST`和`0.0.0.0`，即完成對`OLLAMA_HOST`环境變量的配置。其餘环境變量同理。
+右键“我的電腦”->属性->高級系统設置->環境變量->系统變量->新建。
+在`變量名`和`變量值`中分别填入`OLLAMA_HOST`和`0.0.0.0`，即完成對`OLLAMA_HOST`環境變量的配置。其餘環境變量同理。
 
-MacOS系统通過以下命令設置环境變量：
+MacOS系统通過以下命令設置環境變量：
 ```
 launchctl setenv OLLAMA_HOST "0.0.0.0"
 launchctl setenv OLLAMA_ORIGINS "*"

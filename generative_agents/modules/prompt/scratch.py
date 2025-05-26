@@ -554,7 +554,7 @@ class Scratch:
                 "another_status": "麗茲 已經在 使用浴室",
                 "action": "使用浴室",
                 "another_action": "使用浴室",
-                "reason": "推理：簡和麗茲都想用浴室。簡和麗茲同時使用浴室會很奇怪。所以，既然麗茲已經在用浴室了，對簡来說最好的選擇就是等着用浴室。\n",
+                "reason": "推理：簡和麗茲都想用浴室。簡和麗茲同時使用浴室會很奇怪。所以，既然麗茲已經在用浴室了，對簡来說最好的選擇就是等著用浴室。\n",
                 "answer": "答案：<選項A>",
             }
         )
@@ -635,7 +635,7 @@ class Scratch:
         return {
             "prompt": prompt,
             "callback": _callback,
-            "failsafe": agent.name + " 正在看着 " + other_name,
+            "failsafe": agent.name + " 正在看著 " + other_name,
         }
 
     def prompt_generate_chat(self, agent, other, relation, chats):

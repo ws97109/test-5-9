@@ -299,22 +299,22 @@ class SparkAILLMModel(LLMModel):
         if self._model == "spark_v1.5":
             handle["params"] = {
                 "domain": "general",  # 用於配置大模型版本
-                "spark_url": spark_url_tpl.format("v1.1"),  # 云端环境的服務地址
+                "spark_url": spark_url_tpl.format("v1.1"),  # 雲端環境的服務地址
             }
         elif self._model == "spark_v2.0":
             handle["params"] = {
                 "domain": "generalv2",  # 用於配置大模型版本
-                "spark_url": spark_url_tpl.format("v2.1"),  # 云端环境的服務地址
+                "spark_url": spark_url_tpl.format("v2.1"),  # 雲端環境的服務地址
             }
         elif self._model == "spark_v3.0":
             handle["params"] = {
                 "domain": "generalv3",  # 用於配置大模型版本
-                "spark_url": spark_url_tpl.format("v3.1"),  # 云端环境的服務地址
+                "spark_url": spark_url_tpl.format("v3.1"),  # 雲端環境的服務地址
             }
         elif self._model == "spark_v3.5":
             handle["params"] = {
                 "domain": "generalv3.5",  # 用於配置大模型版本
-                "spark_url": spark_url_tpl.format("v3.5"),  # 云端环境的服務地址
+                "spark_url": spark_url_tpl.format("v3.5"),  # 雲端環境的服務地址
             }
         needed_keys = ["SPARK_APPID", "SPARK_API_SECRET", "SPARK_API_KEY"]
         handle["keys"] = {k: keys[k] for k in needed_keys}

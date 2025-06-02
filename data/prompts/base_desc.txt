@@ -1,0 +1,8 @@
+姓名: ${name}
+年齡：${age}
+先天特質：${innate}
+後天特質：${learned}
+生活習慣：${lifestyle}
+日常計畫：${daily_plan}
+
+今天是 ${date}。${currently}

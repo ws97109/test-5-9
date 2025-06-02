@@ -1,0 +1,16 @@
+這是 ${agent} 最初計畫的 ${start} 至 ${end} 的時間表。
+"""
+${original_plan}
+"""
+但 ${agent} 因為下面的事件額外花费了 ${duration} 分鐘：
+"""
+${event}
+"""
+需要修改 ${agent} ${start} 至 ${end} 的時間表。
+
+修訂後的時間表：
+"""
+${new_plan}
+"""
+
+續寫時間表中剩餘的部分（必須在 ${end} 前結束）：

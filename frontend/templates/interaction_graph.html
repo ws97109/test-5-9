@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Reverie - 角色互動關係視覺化</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap-theme.min.css">
+  <style>
+    .node text {
+      pointer-events: none;
+      font-family: sans-serif;
+    }
+    
+    .node circle {
+      stroke-width: 1.5px;
+    }
+    
+    .link {
+      stroke: #999;
+      stroke-opacity: 0.6;
+    }
+
+    .chart-container {
+      border: 1px solid #ddd;
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    .chart-container:active {
+      cursor: grabbing;
+    }
+
+    .controls {
+      margin-top: 10px;
+    }
+
+    .btn-group {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body class="top-navigation" style="background-color: white">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <a href="/" class="btn btn-primary">返回主頁</a>
+        <h2 class="text-center">角色互動關係視覺化</h2>
+        
+        <!-- 頁籤導航 -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active">
+            <a href="#force-directed" aria-controls="force-directed" role="tab" data-toggle="tab">互動次數力導向圖</a>
+          </li>
+          <li role="presentation">
+            <a href="#chat-matrix" aria-controls="chat-matrix" role="tab" data-toggle="tab">對話長度矩陣圖</a>
+          </li>
+        </ul>
+        
+        <!-- 頁籤內容 -->
+        <div class="tab-content">
+          <!-- 互動次數力導向圖 -->
+          <div role="tabpanel" class="tab-pane active" id="force-directed">
+            <div class="chart-container" style="width: 100%; height: 600px;"></div>
+            <div class="controls">
+              <div class="btn-group" role="group">
+                <button id="zoom-in" class="btn btn-sm btn-default">放大 (+)</button>
+                <button id="zoom-out" class="btn btn-sm btn-default">縮小 (-)</button>
+                <button id="reset-zoom" class="btn btn-sm btn-default">重置視圖</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button id="center-graph" class="btn btn-sm btn-default">居中顯示</button>
+                <button id="fit-to-screen" class="btn btn-sm btn-default">適合畫面</button>
+              </div>
+              <span style="margin-left: 20px; font-size: 12px; color: #666;">
+                提示: 可以拖曳畫布移動視圖，滾輪縮放，拖曳節點調整位置
+              </span>
+            </div>
+          </div>
+          
+          <!-- 對話長度矩陣圖 -->
+          <div role="tabpanel" class="tab-pane" id="chat-matrix">
+            <div class="chart-container" style="width: 100%; height: 600px;"></div>
+            <div id="debug-info" style="margin-top: 10px; font-family: monospace; font-size: 12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  
+  <script>
+    // 模擬數據 - 實際使用時這些數據會從後端傳入
+    const interactionData = {
+      "nodes": [
+        {"id": "阿伊莎", "group": 1},
+        {"id": "克勞斯", "group": 1},
+        {"id": "瑪麗亞", "group": 1},
+        {"id": "沃爾夫岡", "group": 1},
+        {"id": "梅", "group": 2},
+        {"id": "約翰", "group": 2},
+        {"id": "埃迪", "group": 2},
+        {"id": "亞瑟", "group": 3},
+        {"id": "伊莎貝拉", "group": 3}
+      ],
+      "links": [
+        {"source": "阿伊莎", "target": "克勞斯", "value": 15},
+        {"source": "瑪麗亞", "target": "沃爾夫岡", "value": 12},
+        {"source": "梅", "target": "約翰", "value": 25},
+        {"source": "埃迪", "target": "梅", "value": 8},
+        {"source": "亞瑟", "target": "伊莎貝拉", "value": 18},
+        {"source": "阿伊莎", "target": "瑪麗亞", "value": 6},
+        {"source": "克勞斯", "target": "埃迪", "value": 9}
+      ]
+    };
+    
+    const chatLengthData = {
+      "nodes": interactionData.nodes,
+      "links": [
+        {"source": "阿伊莎", "target": "克勞斯", "length": 450},
+        {"source": "瑪麗亞", "target": "沃爾夫岡", "length": 320},
+        {"source": "梅", "target": "約翰", "length": 680},
+        {"source": "埃迪", "target": "梅", "length": 190},
+        {"source": "亞瑟", "target": "伊莎貝拉", "length": 520},
+        {"source": "阿伊莎", "target": "瑪麗亞", "length": 180},
+        {"source": "克勞斯", "target": "埃迪", "length": 240}
+      ]
+    };
+    
+    const personaNames = ["阿伊莎", "克勞斯", "瑪麗亞", "沃爾夫岡", "梅", "約翰", "埃迪", "亞瑟", "伊莎貝拉"];
+
+    // 全局變數
+    let forceDirectedSvg = null;
+    let forceDirectedG = null;
+    let zoom = null;
+    let simulation = null;
+
+    // 當頁面載入完成後初始化圖表
+    document.addEventListener('DOMContentLoaded', function() {
+      // 初始化互動次數力導向圖
+      createForceDirectedGraph(interactionData, "#force-directed .chart-container");
+      
+      // 初始化對話長度矩陣圖
+      try {
+        createChatLengthMatrix(chatLengthData, "#chat-matrix .chart-container", personaNames);
+      } catch (error) {
+        console.error("矩陣圖創建錯誤:", error);
+        document.querySelector("#chat-matrix .chart-container").innerHTML = 
+          '<div style="padding: 20px; text-align: center; color: #d9534f;">' +
+          '<h3>無法創建矩陣圖</h3>' +
+          '<p>錯誤信息: ' + error.message + '</p>' +
+          '</div>';
+      }
+      
+      // 頁籤切換時重新調整圖表大小
+      $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        window.dispatchEvent(new Event('resize'));
+      });
+      
+      // 綁定控制按鈕事件
+      bindControlEvents();
+    });
+
+    // 創建力導向圖
+    function createForceDirectedGraph(data, containerSelector) {
+      // 清空容器
+      d3.select(containerSelector).html("");
+      
+      // 設置畫布大小
+      const container = document.querySelector(containerSelector);
+      const width = container.clientWidth;
+      const height = 600;
+
+      // 定義顏色比例尺
+      const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+      // 創建SVG元素
+      const svg = d3.select(containerSelector)
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+      
+      // 保存全局引用
+      forceDirectedSvg = svg;
+      
+      // 添加縮放和平移功能
+      zoom = d3.zoom()
+        .scaleExtent([0.1, 10])
+        .on("zoom", function(event) {
+          g.attr("transform", event.transform);
+        });
+      
+      svg.call(zoom);
+      
+      // 主圖層
+      const g = svg.append("g");
+      forceDirectedG = g;
+
+      // 創建力導向圖模擬
+      simulation = d3.forceSimulation(data.nodes)
+        .force("link", d3.forceLink(data.links).id(d => d.id).distance(150))
+        .force("charge", d3.forceManyBody().strength(-400))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(40));
+
+      // 繪製連線
+      const link = g.append("g")
+        .selectAll("line")
+        .data(data.links)
+        .enter()
+        .append("line")
+        .attr("stroke-width", d => Math.sqrt(d.value) * 2)
+        .attr("stroke", "#999")
+        .attr("stroke-opacity", 0.6);
+
+      // 創建節點組
+      const node = g.append("g")
+        .selectAll(".node")
+        .data(data.nodes)
+        .enter()
+        .append("g")
+        .attr("class", "node")
+        .style("cursor", "pointer")
+        .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+      // 添加頭像圖片 (背景圓形)
+      node.append("circle")
+        .attr("r", 25)
+        .attr("fill", "#fff")
+        .attr("stroke", d => color(d.group))
+        .attr("stroke-width", 3);
+
+      // 添加頭像圖片
+      node.append("image")
+        .attr("xlink:href", d => "/static/assets/village/agents/" + d.id + "/portrait.png")
+        .attr("x", -20)
+        .attr("y", -20)
+        .attr("width", 40)
+        .attr("height", 40)
+        .attr("clip-path", "circle(20px at 20px 20px)")
+        .style("pointer-events", "none");
+
+      // 添加角色名稱
+      node.append("text")
+        .attr("dy", 35)
+        .attr("text-anchor", "middle")
+        .text(d => d.id)
+        .attr("font-family", "黑體")
+        .attr("font-size", "12px")
+        .attr("fill", "#333")
+        .attr("font-weight", "bold")
+        .attr("pointer-events", "none");
+
+      // 添加互動次數文本到連線上
+      const linkText = g.append("g")
+        .selectAll(".link-text")
+        .data(data.links)
+        .enter()
+        .append("text")
+        .attr("class", "link-text")
+        .text(d => d.value)
+        .attr("font-family", "黑體")
+        .attr("font-size", "10px")
+        .attr("fill", "#333")
+        .attr("text-anchor", "middle")
+        .attr("dy", -5)
+        .attr("pointer-events", "none");
+
+      // 添加圖例
+      const legend = g.append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate(20, 20)");
+
+      legend.append("rect")
+        .attr("width", 120)
+        .attr("height", 60)
+        .attr("fill", "white")
+        .attr("stroke", "#ccc")
+        .attr("opacity", 0.9);
+
+      legend.append("text")
+        .attr("x", 10)
+        .attr("y", 20)
+        .text("互動次數圖")
+        .attr("font-family", "黑體")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bold");
+
+      legend.append("text")
+        .attr("x", 10)
+        .attr("y", 35)
+        .text("• 線條粗細 = 互動次數")
+        .attr("font-family", "黑體")
+        .attr("font-size", "10px");
+
+      legend.append("text")
+        .attr("x", 10)
+        .attr("y", 50)
+        .text("• 可拖曳節點調整位置")
+        .attr("font-family", "黑體")
+        .attr("font-size", "10px");
+
+      // 添加hover效果
+      node.on("mouseover", function(event, d) {
+        d3.select(this).select("circle")
+          .transition()
+          .duration(200)
+          .attr("r", 30)
+          .attr("stroke-width", 4);
+        
+        d3.select(this).select("image")
+          .transition()
+          .duration(200)
+          .attr("x", -25)
+          .attr("y", -25)
+          .attr("width", 50)
+          .attr("height", 50);
+        
+        // 高亮相關連線
+        link.style("stroke-opacity", l => 
+          l.source.id === d.id || l.target.id === d.id ? 1 : 0.1
+        );
+        linkText.style("opacity", l => 
+          l.source.id === d.id || l.target.id === d.id ? 1 : 0.1
+        );
+      })
+      .on("mouseout", function(event, d) {
+        d3.select(this).select("circle")
+          .transition()
+          .duration(200)
+          .attr("r", 25)
+          .attr("stroke-width", 3);
+        
+        d3.select(this).select("image")
+          .transition()
+          .duration(200)
+          .attr("x", -20)
+          .attr("y", -20)
+          .attr("width", 40)
+          .attr("height", 40);
+        
+        // 恢復所有連線
+        link.style("stroke-opacity", 0.6);
+        linkText.style("opacity", 1);
+      });
+
+      // 模擬動畫
+      simulation.on("tick", () => {
+        link
+          .attr("x1", d => d.source.x)
+          .attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x)
+          .attr("y2", d => d.target.y);
+
+        node
+          .attr("transform", d => `translate(${d.x}, ${d.y})`);
+
+        linkText
+          .attr("x", d => (d.source.x + d.target.x) / 2)
+          .attr("y", d => (d.source.y + d.target.y) / 2);
+      });
+
+      // 拖曳功能
+      function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+
+      function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+      }
+
+      function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        // 保持固定位置
+        // d.fx = null;
+        // d.fy = null;
+      }
+
+      // 初始化視圖
+      setTimeout(() => {
+        fitToScreen();
+      }, 1000);
+    }
+
+    // 綁定控制按鈕事件
+    function bindControlEvents() {
+      document.getElementById('zoom-in').addEventListener('click', function() {
+        zoomIn();
+      });
+
+      document.getElementById('zoom-out').addEventListener('click', function() {
+        zoomOut();
+      });
+
+      document.getElementById('reset-zoom').addEventListener('click', function() {
+        resetZoom();
+      });
+
+      document.getElementById('center-graph').addEventListener('click', function() {
+        centerGraph();
+      });
+
+      document.getElementById('fit-to-screen').addEventListener('click', function() {
+        fitToScreen();
+      });
+    }
+
+    // 縮放功能
+    function zoomIn() {
+      if (forceDirectedSvg && zoom) {
+        forceDirectedSvg.transition().duration(300).call(
+          zoom.scaleBy, 1.5
+        );
+      }
+    }
+
+    function zoomOut() {
+      if (forceDirectedSvg && zoom) {
+        forceDirectedSvg.transition().duration(300).call(
+          zoom.scaleBy, 0.67
+        );
+      }
+    }
+
+    function resetZoom() {
+      if (forceDirectedSvg && zoom) {
+        forceDirectedSvg.transition().duration(750).call(
+          zoom.transform,
+          d3.zoomIdentity
+        );
+      }
+    }
+
+    function centerGraph() {
+      if (forceDirectedSvg && zoom) {
+        const width = forceDirectedSvg.node().clientWidth || 800;
+        const height = forceDirectedSvg.node().clientHeight || 600;
+        
+        forceDirectedSvg.transition().duration(750).call(
+          zoom.transform,
+          d3.zoomIdentity.translate(width / 2, height / 2).scale(1)
+        );
+      }
+    }
+
+    function fitToScreen() {
+      if (forceDirectedSvg && zoom && simulation) {
+        const width = forceDirectedSvg.node().clientWidth || 800;
+        const height = forceDirectedSvg.node().clientHeight || 600;
+        
+        // 計算所有節點的邊界
+        const nodes = simulation.nodes();
+        if (nodes.length === 0) return;
+        
+        const xExtent = d3.extent(nodes, d => d.x);
+        const yExtent = d3.extent(nodes, d => d.y);
+        
+        const dx = xExtent[1] - xExtent[0];
+        const dy = yExtent[1] - yExtent[0];
+        const x = (xExtent[0] + xExtent[1]) / 2;
+        const y = (yExtent[0] + yExtent[1]) / 2;
+        
+        const scale = Math.min(width / dx, height / dy) * 0.8;
+        
+        forceDirectedSvg.transition().duration(750).call(
+          zoom.transform,
+          d3.zoomIdentity
+            .translate(width / 2, height / 2)
+            .scale(scale)
+            .translate(-x, -y)
+        );
+      }
+    }
+
+    // 創建對話長度矩陣圖
+    function createChatLengthMatrix(data, containerSelector, personas) {
+      // 清空容器
+      d3.select(containerSelector).html("");
+      
+      if (!personas || personas.length === 0) {
+        throw new Error("沒有角色數據");
+      }
+      
+      // 創建矩陣
+      let matrix = [];
+      for (let i = 0; i < personas.length; i++) {
+        let row = [];
+        for (let j = 0; j < personas.length; j++) {
+          row.push(0);
+        }
+        matrix.push(row);
+      }
+      
+      // 填充矩陣數據
+      const linksData = data.links || [];
+      
+      for (let link of linksData) {
+        const source = link.source;
+        const target = link.target;
+        const value = link.length || 0;
+        
+        const sourceIdx = personas.indexOf(source);
+        const targetIdx = personas.indexOf(target);
+        
+        if (sourceIdx >= 0 && targetIdx >= 0) {
+          matrix[sourceIdx][targetIdx] = value;
+        }
+      }
+      
+      // 設置畫布尺寸
+      const margin = { top: 100, right: 100, bottom: 20, left: 100 };
+      const width = document.querySelector(containerSelector).clientWidth - margin.left - margin.right;
+      const height = 600 - margin.top - margin.bottom;
+      
+      const cellSize = Math.min(width / personas.length, height / personas.length);
+      
+      // 創建SVG
+      const svg = d3.select(containerSelector)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+      
+      // 定義顏色比例尺
+      const maxVal = d3.max(matrix, row => d3.max(row)) || 1;
+      const color = d3.scaleSequential()
+        .domain([0, maxVal])
+        .interpolator(d3.interpolateYlOrRd);
+      
+      // 添加行標籤
+      svg.selectAll(".row-text")
+        .data(personas)
+        .enter()
+        .append("text")
+        .attr("class", "row-text")
+        .attr("x", -10)
+        .attr("y", (d, i) => i * cellSize + cellSize / 2)
+        .attr("text-anchor", "end")
+        .attr("alignment-baseline", "middle")
+        .attr("font-family", "黑體")
+        .attr("font-size", "12px")
+        .text(d => d);
+      
+      // 添加列標籤
+      svg.selectAll(".col-text")
+        .data(personas)
+        .enter()
+        .append("text")
+        .attr("class", "col-text")
+        .attr("x", (d, i) => i * cellSize + cellSize / 2)
+        .attr("y", -10)
+        .attr("text-anchor", "middle")
+        .attr("font-family", "黑體")
+        .attr("font-size", "12px")
+        .text(d => d);
+      
+      // 繪製矩陣單元格
+      personas.forEach((source, i) => {
+        personas.forEach((target, j) => {
+          if (i === j) return; // 跳過對角線
+          
+          const value = matrix[i][j];
+          
+          svg.append("rect")
+            .attr("x", j * cellSize)
+            .attr("y", i * cellSize)
+            .attr("width", cellSize - 1)
+            .attr("height", cellSize - 1)
+            .attr("fill", value > 0 ? color(value) : "#f8f8f8")
+            .attr("stroke", "#ccc")
+            .attr("stroke-width", 1)
+            .on("mouseover", function() {
+              d3.select(this).attr("stroke", "#333").attr("stroke-width", 2);
+            })
+            .on("mouseout", function() {
+              d3.select(this).attr("stroke", "#ccc").attr("stroke-width", 1);
+            })
+            .append("title")
+            .text(`${source} → ${target}: ${value} 字符`);
+          
+          if (value > 0) {
+            svg.append("text")
+              .attr("x", j * cellSize + cellSize / 2)
+              .attr("y", i * cellSize + cellSize / 2)
+              .attr("text-anchor", "middle")
+              .attr("alignment-baseline", "middle")
+              .attr("font-family", "黑體")
+              .attr("font-size", "10px")
+              .attr("fill", value > maxVal/2 ? "white" : "black")
+              .text(value);
+          }
+        });
+      });
+      
+      // 添加圖表標題
+      svg.append("text")
+        .attr("x", (personas.length * cellSize) / 2)
+        .attr("y", -margin.top / 2)
+        .attr("text-anchor", "middle")
+        .attr("font-family", "黑體")
+        .attr("font-size", "16px")
+        .attr("font-weight", "bold")
+        .text("角色對話長度矩陣 (基於累計數據)");
+    }
+  </script>
+</body>
+</html>

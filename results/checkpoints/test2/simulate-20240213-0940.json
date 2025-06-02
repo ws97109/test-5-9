@@ -1,0 +1,1487 @@
+{
+  "stride": 10,
+  "time": "20240213-09:40",
+  "maze": {
+    "path": "assets/village/maze.json"
+  },
+  "agent_base": {
+    "percept": {
+      "mode": "box",
+      "vision_r": 8,
+      "att_bandwidth": 8
+    },
+    "schedule": {
+      "max_try": 5,
+      "diversity": 5
+    },
+    "think": {
+      "mode": "llm",
+      "llm": {
+        "base_url": "http://127.0.0.1:11434/v1",
+        "model": "qwen2.5:14b",
+        "embedding_model": "bge-m3:latest"
+      },
+      "interval": 1000,
+      "poignancy_max": 150
+    },
+    "chat_iter": 4,
+    "associate": {
+      "embedding": {
+        "type": "ollama",
+        "base_url": "http://127.0.0.1:11434",
+        "model": "bge-m3:latest"
+      },
+      "retention": 8
+    }
+  },
+  "agents": {
+    "阿伊莎": {
+      "config_path": "assets/village/agents/阿伊莎/agent.json",
+      "status": {
+        "poignancy": 6
+      },
+      "schedule": {
+        "create": "20240213-09:30:00",
+        "daily_schedule": [
+          {
+            "idx": 0,
+            "describe": "睡覺",
+            "start": 0,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 1,
+            "describe": "睡覺",
+            "start": 60,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 2,
+            "describe": "睡覺",
+            "start": 120,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 3,
+            "describe": "睡覺",
+            "start": 180,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 4,
+            "describe": "睡覺",
+            "start": 240,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 5,
+            "describe": "睡覺",
+            "start": 300,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 6,
+            "describe": "起床",
+            "start": 360,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 7,
+            "describe": "吃早餐",
+            "start": 420,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 8,
+            "describe": "自由活動（閱讀、寫作練習）",
+            "start": 480,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 9,
+            "describe": "自由活動（閱讀、寫作練習）",
+            "start": 540,
+            "duration": 60,
+            "decompose": [
+              {
+                "idx": 0,
+                "describe": "研究莎士比亞戲劇中的語言運用",
+                "start": 540,
+                "duration": 25
+              },
+              {
+                "idx": 1,
+                "describe": "做筆記和整理資料",
+                "start": 565,
+                "duration": 10
+              },
+              {
+                "idx": 2,
+                "describe": "研究其他文學作品的比較分析",
+                "start": 575,
+                "duration": 5
+              },
+              {
+                "idx": 3,
+                "describe": "克勞斯邀請專注於莎士比亞戲劇研究的阿伊莎討論他關於低收入社區中產階級化的研究，兩人同意中午在霍布斯咖啡館碰面交流心得。",
+                "start": 580,
+                "duration": 1
+              },
+              {
+                "idx": 4,
+                "describe": "審閱先前寫作練習的成果",
+                "start": 581,
+                "duration": 9
+              },
+              {
+                "idx": 5,
+                "describe": "研究莎士比亞戲劇中的語言運用",
+                "start": 590,
+                "duration": 5
+              },
+              {
+                "idx": 6,
+                "describe": "做筆記和整理資料",
+                "start": 595,
+                "duration": 5
+              }
+            ]
+          },
+          {
+            "idx": 10,
+            "describe": "去奧克山學院的圖書館上課",
+            "start": 600,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 11,
+            "describe": "上課",
+            "start": 660,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 12,
+            "describe": "上課",
+            "start": 720,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 13,
+            "describe": "上課",
+            "start": 780,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 14,
+            "describe": "上課",
+            "start": 840,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 15,
+            "describe": "在圖書館進行莎士比亞戲劇研究",
+            "start": 900,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 16,
+            "describe": "在圖書館進行莎士比亞戲劇研究",
+            "start": 960,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 17,
+            "describe": "吃晚飯",
+            "start": 1020,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 18,
+            "describe": "自由活動（閱讀、寫作練習）",
+            "start": 1080,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 19,
+            "describe": "閱讀文學相關資料或寫作練習",
+            "start": 1140,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 20,
+            "describe": "閱讀文學相關資料或寫作練習",
+            "start": 1200,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 21,
+            "describe": "睡覺準備（整理筆記、洗澡等）",
+            "start": 1260,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 22,
+            "describe": "睡覺",
+            "start": 1320,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 23,
+            "describe": "睡覺",
+            "start": 1380,
+            "duration": 60,
+            "decompose": {}
+          }
+        ]
+      },
+      "associate": {
+        "memory": {
+          "event": [
+            "node_2",
+            "node_1"
+          ],
+          "thought": [
+            "node_0"
+          ],
+          "chat": []
+        }
+      },
+      "chats": [
+        [
+          "克勞斯",
+          "嗨，阿伊莎，我剛拿到一些關於低收入社區中產階級化的最新研究資料，你有興趣嗎？我們可以一起討論一下。"
+        ],
+        [
+          "阿伊莎",
+          "嗨，克勞斯，謝謝你的建議，但我目前專注於莎士比亞戲劇的研究。不過這聽起來很有趣，也許我們可以互相分享一些研究心得？"
+        ],
+        [
+          "克勞斯",
+          "當然可以，阿伊莎。我正在研究低收入社區中產階級化的影響，這可能會對你的文學作品比較分析提供一些社會背景的洞見。我們可以在午餐時間一起討論看看？"
+        ],
+        [
+          "阿伊莎",
+          "那真是太好了，克勞斯。午餐時間我們可以一起吃飯並討論彼此的研究，這樣應該會很有幫助。"
+        ],
+        [
+          "克勞斯",
+          "太好了，阿伊莎，那我們中午在霍布斯咖啡館見吧，期待和你分享我的研究發現。"
+        ]
+      ],
+      "currently": "阿伊莎正在為她的畢業論文做研究，主題是莎士比亞戲劇中的語言運用。她也在上課，學習更多關於寫作的知識。",
+      "action": {
+        "event": {
+          "subject": "阿伊莎",
+          "predicate": "此時",
+          "object": "研究其他文學作品的比較分析",
+          "describe": "研究其他文學作品的比較分析",
+          "address": [
+            "the Ville",
+            "玫瑰酒吧",
+            "酒吧",
+            "麥克風"
+          ],
+          "emoji": "研究其他文學作品的比較分析"
+        },
+        "obj_event": {
+          "subject": "麥克風",
+          "predicate": "此時",
+          "object": "空閒",
+          "describe": "空閒",
+          "address": [
+            "the Ville",
+            "玫瑰酒吧",
+            "酒吧",
+            "麥克風"
+          ],
+          "emoji": ""
+        },
+        "start": "20240213-09:35:00",
+        "duration": 10
+      },
+      "coord": [
+        61,
+        25
+      ]
+    },
+    "克勞斯": {
+      "config_path": "assets/village/agents/克勞斯/agent.json",
+      "status": {
+        "poignancy": 8
+      },
+      "schedule": {
+        "create": "20240213-09:30:00",
+        "daily_schedule": [
+          {
+            "idx": 0,
+            "describe": "睡覺",
+            "start": 0,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 1,
+            "describe": "睡覺",
+            "start": 60,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 2,
+            "describe": "睡覺",
+            "start": 120,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 3,
+            "describe": "睡覺",
+            "start": 180,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 4,
+            "describe": "睡覺",
+            "start": 240,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 5,
+            "describe": "睡覺",
+            "start": 300,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 6,
+            "describe": "睡覺",
+            "start": 360,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 7,
+            "describe": "起床",
+            "start": 420,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 8,
+            "describe": "做晨間準備和吃早餐",
+            "start": 480,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 9,
+            "describe": "出發前往奥克山學院圖書館",
+            "start": 540,
+            "duration": 60,
+            "decompose": [
+              {
+                "idx": 0,
+                "describe": "出門前往公共交通站點",
+                "start": 540,
+                "duration": 5
+              },
+              {
+                "idx": 1,
+                "describe": "等車和搭乘公共交通工具",
+                "start": 545,
+                "duration": 10
+              },
+              {
+                "idx": 2,
+                "describe": "到達奧克山學院入口並前往圖書館",
+                "start": 555,
+                "duration": 5
+              },
+              {
+                "idx": 3,
+                "describe": "檢查電子郵件和即時通訊軟體",
+                "start": 560,
+                "duration": 10
+              },
+              {
+                "idx": 4,
+                "describe": "獲取圖書館的最新研究資料",
+                "start": 570,
+                "duration": 10
+              },
+              {
+                "idx": 5,
+                "describe": "克勞斯邀請專注於莎士比亞戲劇研究的阿伊莎討論他關於低收入社區中產階級化的研究，兩人同意中午在霍布斯咖啡館碰面交流心得。",
+                "start": 580,
+                "duration": 1
+              },
+              {
+                "idx": 6,
+                "describe": "與圖書館工作人員交談",
+                "start": 581,
+                "duration": 4
+              },
+              {
+                "idx": 7,
+                "describe": "在圖書館內找到合適的工作位置",
+                "start": 585,
+                "duration": 5
+              },
+              {
+                "idx": 8,
+                "describe": "確認論文研究的進度和目標",
+                "start": 590,
+                "duration": 10
+              }
+            ]
+          },
+          {
+            "idx": 10,
+            "describe": "在圖書館開始寫作論文",
+            "start": 600,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 11,
+            "describe": "在圖書館繼續寫作論文",
+            "start": 660,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 12,
+            "describe": "前往霍布斯咖啡館吃午餐",
+            "start": 720,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 13,
+            "describe": "返回圖書館繼續寫作論文",
+            "start": 780,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 14,
+            "describe": "在圖書館繼續寫作論文",
+            "start": 840,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 15,
+            "describe": "在圖書館繼續寫作論文",
+            "start": 900,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 16,
+            "describe": "回家準備晚餐",
+            "start": 960,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 17,
+            "describe": "吃晚飯",
+            "start": 1020,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 18,
+            "describe": "放鬆休息，看新聞或閱讀相關資料",
+            "start": 1080,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 19,
+            "describe": "繼續在家完成論文撰寫",
+            "start": 1140,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 20,
+            "describe": "在家繼續完成論文撰寫",
+            "start": 1200,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 21,
+            "describe": "放鬆休息，可能看電影或聽音樂",
+            "start": 1260,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 22,
+            "describe": "准備上床睡覺",
+            "start": 1320,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 23,
+            "describe": "睡覺",
+            "start": 1380,
+            "duration": 60,
+            "decompose": {}
+          }
+        ]
+      },
+      "associate": {
+        "memory": {
+          "event": [
+            "node_3",
+            "node_2",
+            "node_1"
+          ],
+          "thought": [
+            "node_0"
+          ],
+          "chat": []
+        }
+      },
+      "chats": [
+        [
+          "克勞斯",
+          "嗨，阿伊莎，我剛拿到一些關於低收入社區中產階級化的最新研究資料，你有興趣嗎？我們可以一起討論一下。"
+        ],
+        [
+          "阿伊莎",
+          "嗨，克勞斯，謝謝你的建議，但我目前專注於莎士比亞戲劇的研究。不過這聽起來很有趣，也許我們可以互相分享一些研究心得？"
+        ],
+        [
+          "克勞斯",
+          "當然可以，阿伊莎。我正在研究低收入社區中產階級化的影響，這可能會對你的文學作品比較分析提供一些社會背景的洞見。我們可以在午餐時間一起討論看看？"
+        ],
+        [
+          "阿伊莎",
+          "那真是太好了，克勞斯。午餐時間我們可以一起吃飯並討論彼此的研究，這樣應該會很有幫助。"
+        ],
+        [
+          "克勞斯",
+          "太好了，阿伊莎，那我們中午在霍布斯咖啡館見吧，期待和你分享我的研究發現。"
+        ]
+      ],
+      "currently": "克勞斯正在撰寫一篇關於低收入社區中產階級化影響的研究論文。",
+      "action": {
+        "event": {
+          "subject": "克勞斯",
+          "predicate": "對話",
+          "object": "阿伊莎",
+          "describe": "克勞斯邀請專注於莎士比亞戲劇研究的阿伊莎討論他關於低收入社區中產階級化的研究，兩人同意中午在霍布斯咖啡館碰面交流心得。",
+          "address": [
+            "the Ville",
+            "玫瑰酒吧",
+            "酒吧",
+            "架子"
+          ],
+          "emoji": "💬"
+        },
+        "obj_event": null,
+        "start": "20240213-09:40:00",
+        "duration": 1
+      },
+      "coord": [
+        54,
+        26
+      ]
+    },
+    "瑪麗亞": {
+      "config_path": "assets/village/agents/瑪麗亞/agent.json",
+      "status": {
+        "poignancy": 0
+      },
+      "schedule": {
+        "create": "20240213-09:30:00",
+        "daily_schedule": [
+          {
+            "idx": 0,
+            "describe": "睡覺",
+            "start": 0,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 1,
+            "describe": "睡覺",
+            "start": 60,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 2,
+            "describe": "睡覺",
+            "start": 120,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 3,
+            "describe": "睡覺",
+            "start": 180,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 4,
+            "describe": "睡覺",
+            "start": 240,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 5,
+            "describe": "睡覺",
+            "start": 300,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 6,
+            "describe": "睡覺",
+            "start": 360,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 7,
+            "describe": "睡覺",
+            "start": 420,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 8,
+            "describe": "睡覺",
+            "start": 480,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 9,
+            "describe": "睡覺",
+            "start": 540,
+            "duration": 60,
+            "decompose": [
+              {
+                "idx": 0,
+                "describe": "繼續睡眠",
+                "start": 540,
+                "duration": 5
+              },
+              {
+                "idx": 1,
+                "describe": "繼續睡眠",
+                "start": 545,
+                "duration": 5
+              },
+              {
+                "idx": 2,
+                "describe": "繼續睡眠",
+                "start": 550,
+                "duration": 5
+              },
+              {
+                "idx": 3,
+                "describe": "繼續睡眠",
+                "start": 555,
+                "duration": 5
+              },
+              {
+                "idx": 4,
+                "describe": "繼續睡眠",
+                "start": 560,
+                "duration": 5
+              },
+              {
+                "idx": 5,
+                "describe": "繼續睡眠",
+                "start": 565,
+                "duration": 5
+              },
+              {
+                "idx": 6,
+                "describe": "繼續睡眠",
+                "start": 570,
+                "duration": 5
+              },
+              {
+                "idx": 7,
+                "describe": "繼續睡眠",
+                "start": 575,
+                "duration": 5
+              },
+              {
+                "idx": 8,
+                "describe": "繼續睡眠",
+                "start": 580,
+                "duration": 5
+              },
+              {
+                "idx": 9,
+                "describe": "繼續睡眠",
+                "start": 585,
+                "duration": 5
+              },
+              {
+                "idx": 10,
+                "describe": "繼續睡眠",
+                "start": 590,
+                "duration": 5
+              },
+              {
+                "idx": 11,
+                "describe": "繼續睡眠",
+                "start": 595,
+                "duration": 5
+              }
+            ]
+          },
+          {
+            "idx": 10,
+            "describe": "起床",
+            "start": 600,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 11,
+            "describe": "准備午餐",
+            "start": 660,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 12,
+            "describe": "吃午餐",
+            "start": 720,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 13,
+            "describe": "前往霍布斯咖啡館學習和吃飯",
+            "start": 780,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 14,
+            "describe": "在霍布斯咖啡館學習",
+            "start": 840,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 15,
+            "describe": "在霍布斯咖啡館學習",
+            "start": 900,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 16,
+            "describe": "在霍布斯咖啡館學習",
+            "start": 960,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 17,
+            "describe": "在霍布斯咖啡館吃飯",
+            "start": 1020,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 18,
+            "describe": "回家休息和准備晚餐",
+            "start": 1080,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 19,
+            "describe": "吃晚餐",
+            "start": 1140,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 20,
+            "describe": "准備開始Twitch直播或玩遊戲",
+            "start": 1200,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 21,
+            "describe": "Twitch直播或玩遊戲",
+            "start": 1260,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 22,
+            "describe": "Twitch直播或玩遊戲",
+            "start": 1320,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 23,
+            "describe": "Twitch直播或玩遊戲",
+            "start": 1380,
+            "duration": 60,
+            "decompose": {}
+          }
+        ]
+      },
+      "associate": {
+        "memory": {
+          "event": [],
+          "thought": [
+            "node_0"
+          ],
+          "chat": []
+        }
+      },
+      "chats": [],
+      "currently": "瑪麗亞正在攻讀物理學位，並在Twitch上直播遊戲以賺取額外收入。她幾乎每天都會去霍布斯咖啡館學習和吃飯。",
+      "action": {
+        "event": {
+          "subject": "瑪麗亞",
+          "predicate": "正在",
+          "object": "睡覺",
+          "describe": "",
+          "address": [
+            "the Ville",
+            "奥克山學院宿舍",
+            "瑪麗亞的房間",
+            "床"
+          ],
+          "emoji": "😴"
+        },
+        "obj_event": {
+          "subject": "床",
+          "predicate": "被占用",
+          "object": "瑪麗亞",
+          "describe": "",
+          "address": [
+            "the Ville",
+            "奥克山學院宿舍",
+            "瑪麗亞的房間",
+            "床"
+          ],
+          "emoji": "🛌"
+        },
+        "start": "20240213-09:00:00",
+        "duration": 60
+      },
+      "coord": [
+        123,
+        57
+      ]
+    },
+    "沃爾夫岡": {
+      "config_path": "assets/village/agents/沃爾夫岡/agent.json",
+      "status": {
+        "poignancy": 10
+      },
+      "schedule": {
+        "create": "20240213-09:30:00",
+        "daily_schedule": [
+          {
+            "idx": 0,
+            "describe": "睡覺",
+            "start": 0,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 1,
+            "describe": "睡覺",
+            "start": 60,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 2,
+            "describe": "睡覺",
+            "start": 120,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 3,
+            "describe": "睡覺",
+            "start": 180,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 4,
+            "describe": "睡覺",
+            "start": 240,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 5,
+            "describe": "起床",
+            "start": 300,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 6,
+            "describe": "晨跑",
+            "start": 360,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 7,
+            "describe": "吃早餐",
+            "start": 420,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 8,
+            "describe": "上化學課及複習考試內容",
+            "start": 480,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 9,
+            "describe": "上化學課及複習考試內容",
+            "start": 540,
+            "duration": 60,
+            "decompose": [
+              {
+                "idx": 0,
+                "describe": "查看化學課的課程大綱",
+                "start": 540,
+                "duration": 5
+              },
+              {
+                "idx": 1,
+                "describe": "調整筆記以配合當天的課程內容",
+                "start": 545,
+                "duration": 10
+              },
+              {
+                "idx": 2,
+                "describe": "閱讀化學課教材中的相關章節",
+                "start": 555,
+                "duration": 10
+              },
+              {
+                "idx": 3,
+                "describe": "記錄重要的考試內容和公式",
+                "start": 565,
+                "duration": 5
+              },
+              {
+                "idx": 4,
+                "describe": "研究過去的考題以了解考試形式",
+                "start": 570,
+                "duration": 10
+              },
+              {
+                "idx": 5,
+                "describe": "與同學討論複習內容和疑問點",
+                "start": 580,
+                "duration": 5
+              },
+              {
+                "idx": 6,
+                "describe": "簡要回顧前一天的課程重點",
+                "start": 585,
+                "duration": 5
+              },
+              {
+                "idx": 7,
+                "describe": "記錄當天課堂上的新知識點",
+                "start": 590,
+                "duration": 5
+              },
+              {
+                "idx": 8,
+                "describe": "簡要整理筆記以備後續複習使用",
+                "start": 595,
+                "duration": 5
+              }
+            ]
+          },
+          {
+            "idx": 10,
+            "describe": "上化學課及複習考試內容",
+            "start": 600,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 11,
+            "describe": "上化學課及複習考試內容",
+            "start": 660,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 12,
+            "describe": "吃午餐",
+            "start": 720,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 13,
+            "describe": "進行體能訓練和運動員訓練",
+            "start": 780,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 14,
+            "describe": "進行體能訓練和運動員訓練",
+            "start": 840,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 15,
+            "describe": "進行體能訓練和運動員訓練",
+            "start": 900,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 16,
+            "describe": "休息和閱讀相關學習資料",
+            "start": 960,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 17,
+            "describe": "休息和閱讀相關學習資料",
+            "start": 1020,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 18,
+            "describe": "吃晚餐",
+            "start": 1080,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 19,
+            "describe": "鍛煉身體",
+            "start": 1140,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 20,
+            "describe": "鍛煉身體",
+            "start": 1200,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 21,
+            "describe": "准備睡覺",
+            "start": 1260,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 22,
+            "describe": "睡覺",
+            "start": 1320,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 23,
+            "describe": "睡覺",
+            "start": 1380,
+            "duration": 60,
+            "decompose": {}
+          }
+        ]
+      },
+      "associate": {
+        "memory": {
+          "event": [
+            "node_2",
+            "node_1"
+          ],
+          "thought": [
+            "node_0"
+          ],
+          "chat": []
+        }
+      },
+      "chats": [],
+      "currently": "沃爾夫岡正在為下一場比賽進行訓練，並為考試做準備。他也在尋找提高學習效率的方法。",
+      "action": {
+        "event": {
+          "subject": "沃爾夫岡",
+          "predicate": "此時",
+          "object": "研究過去的考題以了解考試形式",
+          "describe": "研究過去的考題以了解考試形式",
+          "address": [
+            "the Ville",
+            "約翰遜公園",
+            "公園",
+            "公園花園"
+          ],
+          "emoji": "研究過去的考題以了解考試形式"
+        },
+        "obj_event": {
+          "subject": "公園花園",
+          "predicate": "此時",
+          "object": "正被欣賞研究",
+          "describe": "正被欣賞研究",
+          "address": [
+            "the Ville",
+            "約翰遜公園",
+            "公園",
+            "公園花園"
+          ],
+          "emoji": ""
+        },
+        "start": "20240213-09:30:00",
+        "duration": 10
+      },
+      "coord": [
+        34,
+        50
+      ]
+    },
+    "埃迪": {
+      "config_path": "assets/village/agents/埃迪/agent.json",
+      "status": {
+        "poignancy": 2
+      },
+      "schedule": {
+        "create": "20240213-09:30:00",
+        "daily_schedule": [
+          {
+            "idx": 0,
+            "describe": "睡覺",
+            "start": 0,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 1,
+            "describe": "睡覺",
+            "start": 60,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 2,
+            "describe": "睡覺",
+            "start": 120,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 3,
+            "describe": "睡覺",
+            "start": 180,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 4,
+            "describe": "睡覺",
+            "start": 240,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 5,
+            "describe": "睡覺",
+            "start": 300,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 6,
+            "describe": "睡覺",
+            "start": 360,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 7,
+            "describe": "起床",
+            "start": 420,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 8,
+            "describe": "准備起床和準備早餐",
+            "start": 480,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 9,
+            "describe": "吃早餐並准備上課",
+            "start": 540,
+            "duration": 60,
+            "decompose": [
+              {
+                "idx": 0,
+                "describe": "起床並整理床鋪",
+                "start": 540,
+                "duration": 5
+              },
+              {
+                "idx": 1,
+                "describe": "洗臉和刷牙",
+                "start": 545,
+                "duration": 5
+              },
+              {
+                "idx": 2,
+                "describe": "簡單的晨間拉伸運動",
+                "start": 550,
+                "duration": 10
+              },
+              {
+                "idx": 3,
+                "describe": "准備早餐材料",
+                "start": 560,
+                "duration": 5
+              },
+              {
+                "idx": 4,
+                "describe": "制作早餐",
+                "start": 565,
+                "duration": 10
+              },
+              {
+                "idx": 5,
+                "describe": "吃早餐並喝咖啡",
+                "start": 575,
+                "duration": 15
+              },
+              {
+                "idx": 6,
+                "describe": "整理上課所需的書籍和筆記本",
+                "start": 590,
+                "duration": 5
+              },
+              {
+                "idx": 7,
+                "describe": "出門前往奧克山學院的路上購買咖啡",
+                "start": 595,
+                "duration": 5
+              }
+            ]
+          },
+          {
+            "idx": 10,
+            "describe": "去奥克山學院上課",
+            "start": 600,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 11,
+            "describe": "上音樂理論課程",
+            "start": 660,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 12,
+            "describe": "上音樂理論課程",
+            "start": 720,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 13,
+            "describe": "上音樂理論課程",
+            "start": 780,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 14,
+            "describe": "回家休息一下",
+            "start": 840,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 15,
+            "describe": "前往霍布斯咖啡館吃飯和學習",
+            "start": 900,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 16,
+            "describe": "在霍布斯咖啡館吃飯和學習",
+            "start": 960,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 17,
+            "describe": "在霍布斯咖啡館吃飯和學習",
+            "start": 1020,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 18,
+            "describe": "回家繼續學習音樂理論",
+            "start": 1080,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 19,
+            "describe": "准備音樂合成項目",
+            "start": 1140,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 20,
+            "describe": "繼續準備音樂合成項目",
+            "start": 1200,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 21,
+            "describe": "繼續準備音樂合成項目",
+            "start": 1260,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 22,
+            "describe": "完成當天的音樂合成項目工作，准備休息",
+            "start": 1320,
+            "duration": 60,
+            "decompose": {}
+          },
+          {
+            "idx": 23,
+            "describe": "上床睡覺",
+            "start": 1380,
+            "duration": 60,
+            "decompose": {}
+          }
+        ]
+      },
+      "associate": {
+        "memory": {
+          "event": [
+            "node_2",
+            "node_1"
+          ],
+          "thought": [
+            "node_0"
+          ],
+          "chat": []
+        }
+      },
+      "chats": [],
+      "currently": "埃迪正在為他的大學班級做音樂合成項目。他也在上課，學習更多的音樂理論。",
+      "action": {
+        "event": {
+          "subject": "埃迪",
+          "predicate": "此時",
+          "object": "吃早餐並喝咖啡",
+          "describe": "吃早餐並喝咖啡",
+          "address": [
+            "the Ville",
+            "林氏家族的房子",
+            "廚房",
+            "烹飪區"
+          ],
+          "emoji": "吃早餐並喝咖啡"
+        },
+        "obj_event": {
+          "subject": "烹飪區",
+          "predicate": "此時",
+          "object": "已經清潔",
+          "describe": "已經清潔",
+          "address": [
+            "the Ville",
+            "林氏家族的房子",
+            "廚房",
+            "烹飪區"
+          ],
+          "emoji": ""
+        },
+        "start": "20240213-09:35:00",
+        "duration": 15
+      },
+      "coord": [
+        93,
+        66
+      ]
+    }
+  },
+  "api_keys": {
+    "OPENAI_API_KEY": "",
+    "QIANFAN_AK": "",
+    "QIANFAN_SK": "",
+    "SPARK_APPID": "",
+    "SPARK_API_SECRET": "",
+    "SPARK_API_KEY": "",
+    "ZHIPUAI_API_KEY": ""
+  },
+  "step": 2
+}

@@ -1,0 +1,31 @@
+http://127.0.0.1:5000/?name=名稱
+
+模擬環境
+conda activate aitown_tw
+
+運行虚擬小鎮
+cd generative_agents
+python start.py --name five-ai --start "20240213-09:30" --step 10 --stride 10
+
+參數說明:
+name - 每次启動虚擬小鎮，需要設定唯一的名稱，用於事後回放。
+start - 虚擬小鎮的起始時間。
+resume - 在運行結束或意外中斷後，從上次的“斷點”处，繼續運行虚擬小鎮。
+step - 在迭代多少步之後停止運行。
+stride - 每一步迭代在虚擬小鎮中對應的時間（分鐘）。假如設定--stride 10，虚擬小鎮在迭代過程中的時間變化將會是 9:00，9:10，9:20 ...
+
+
+生成回放數據
+python compress.py --name <simulation-name>
+運行結束後將在results/compressed/<simulation-name>目錄下生成回放數據文件movement.json。同時還將生成simulation.md，以時間线方式呈現每個智能體的狀態及對話内容。
+
+回放
+python replay.py
+
+name - 启動虚擬小鎮時設定的名稱。
+step - 回放的起始步數，0代表從第一幀開始回放，预設值為0。
+speed - 回放速度（0-5），0最慢，5最快，预設值為2。
+zoom - 畫面缩放比例，预設值為0.8。
+
+範例
+http://127.0.0.1:5001/?name=name&step=0&speed=2&zoom=0.6

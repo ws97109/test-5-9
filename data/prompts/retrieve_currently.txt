@@ -1,0 +1,12 @@
+${agent} 在 ${time} 的狀態：
+${currently}
+
+${agent} 在 ${time} 結束時記得這些事情：
+${plan}
+
+${agent} 在 ${time} 結束時的想法和感受：
+${thought}
+
+現在是 ${current_time}。根據上述情況，以第三人稱，用一句話描述 ${agent} 在 ${current_time} 的狀態，以反映 ${agent} 在 ${time} 結束時的想法和感受。
+
+輸出格式：狀態: <新狀態>

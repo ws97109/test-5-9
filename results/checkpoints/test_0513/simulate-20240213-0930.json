@@ -35,8 +35,8 @@
     }
   },
   "agents": {
-    "阿伊莎": {
-      "config_path": "assets/village/agents/阿伊莎/agent.json",
+    "盧品蓉": {
+      "config_path": "assets/village/agents/盧品蓉/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -260,10 +260,10 @@
         }
       },
       "chats": [],
-      "currently": "阿伊莎正在為她的畢業論文做研究，主題是莎士比亞戲劇中的語言運用。她也在上課，學習更多關於寫作的知識。",
+      "currently": "盧品蓉正在為她的畢業論文做研究，主題是莎士比亞戲劇中的語言運用。她也在上課，學習更多關於寫作的知識。",
       "action": {
         "event": {
-          "subject": "阿伊莎",
+          "subject": "盧品蓉",
           "predicate": "此時",
           "object": "做筆記和整理資料",
           "describe": "做筆記和整理資料",
@@ -296,8 +296,8 @@
         26
       ]
     },
-    "克勞斯": {
-      "config_path": "assets/village/agents/克勞斯/agent.json",
+    "魏祈紘": {
+      "config_path": "assets/village/agents/魏祈紘/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -533,10 +533,10 @@
         }
       },
       "chats": [],
-      "currently": "克勞斯正在撰寫一篇關於低收入社區中產階級化影響的研究論文。",
+      "currently": "魏祈紘正在撰寫一篇關於低收入社區中產階級化影響的研究論文。",
       "action": {
         "event": {
-          "subject": "克勞斯",
+          "subject": "魏祈紘",
           "predicate": "此時",
           "object": "獲取圖書館的最新研究資料",
           "describe": "獲取圖書館的最新研究資料",
@@ -569,8 +569,8 @@
         44
       ]
     },
-    "瑪麗亞": {
-      "config_path": "assets/village/agents/瑪麗亞/agent.json",
+    "莊于萱": {
+      "config_path": "assets/village/agents/莊于萱/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -830,17 +830,17 @@
         }
       },
       "chats": [],
-      "currently": "瑪麗亞正在攻讀物理學位，並在Twitch上直播遊戲以賺取額外收入。她幾乎每天都會去霍布斯咖啡館學習和吃飯。",
+      "currently": "莊于萱正在攻讀物理學位，並在Twitch上直播遊戲以賺取額外收入。她幾乎每天都會去霍布斯咖啡館學習和吃飯。",
       "action": {
         "event": {
-          "subject": "瑪麗亞",
+          "subject": "莊于萱",
           "predicate": "正在",
           "object": "睡覺",
           "describe": "",
           "address": [
             "the Ville",
             "奥克山學院宿舍",
-            "瑪麗亞的房間",
+            "莊于萱的房間",
             "床"
           ],
           "emoji": "😴"
@@ -848,12 +848,12 @@
         "obj_event": {
           "subject": "床",
           "predicate": "被占用",
-          "object": "瑪麗亞",
+          "object": "莊于萱",
           "describe": "",
           "address": [
             "the Ville",
             "奥克山學院宿舍",
-            "瑪麗亞的房間",
+            "莊于萱的房間",
             "床"
           ],
           "emoji": "🛌"
@@ -866,8 +866,8 @@
         57
       ]
     },
-    "沃爾夫岡": {
-      "config_path": "assets/village/agents/沃爾夫岡/agent.json",
+    "施宇鴻": {
+      "config_path": "assets/village/agents/施宇鴻/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -1109,10 +1109,10 @@
         }
       },
       "chats": [],
-      "currently": "沃爾夫岡正在為下一場比賽進行訓練，並為考試做準備。他也在尋找提高學習效率的方法。",
+      "currently": "施宇鴻正在為下一場比賽進行訓練，並為考試做準備。他也在尋找提高學習效率的方法。",
       "action": {
         "event": {
-          "subject": "沃爾夫岡",
+          "subject": "施宇鴻",
           "predicate": "此時",
           "object": "研究過去的考題以了解考試形式",
           "describe": "研究過去的考題以了解考試形式",
@@ -1145,8 +1145,8 @@
         25
       ]
     },
-    "梅": {
-      "config_path": "assets/village/agents/梅/agent.json",
+    "游庭瑄": {
+      "config_path": "assets/village/agents/游庭瑄/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -1224,7 +1224,7 @@
             "decompose": [
               {
                 "idx": 0,
-                "describe": "協助兒子埃迪整理書包",
+                "describe": "協助兒子鄭傑丞整理書包",
                 "start": 540,
                 "duration": 10
               },
@@ -1248,7 +1248,7 @@
               },
               {
                 "idx": 4,
-                "describe": "與女兒討論今天的哲學課程內容，同時處理約翰開藥店的事宜。",
+                "describe": "與女兒討論今天的哲學課程內容，同時處理李昇峰開藥店的事宜。",
                 "start": 570,
                 "duration": 10
               },
@@ -1383,18 +1383,18 @@
       },
       "chats": [
         [
-          "約翰",
-          "梅，女兒在討論今天的課程嗎？我準備九點半去開藥店了，今天有什麼特別的計劃嗎？"
+          "李昇峰",
+          "游庭瑄，女兒在討論今天的課程嗎？我準備九點半去開藥店了，今天有什麼特別的計劃嗎？"
         ],
         [
-          "梅",
-          "約翰，女兒正在和我討論今天的哲學課程內容。今天好像沒有特別的計劃，只是希望在下午有空的時候能多花些時間寫研究論文。你準備好了就去開藥店吧，祝你好運！"
+          "游庭瑄",
+          "李昇峰，女兒正在和我討論今天的哲學課程內容。今天好像沒有特別的計劃，只是希望在下午有空的時候能多花些時間寫研究論文。你準備好了就去開藥店吧，祝你好運！"
         ]
       ],
-      "currently": "梅與丈夫約翰和兒子埃迪住在一起，她正在教授哲學課程並撰寫研究論文。她還幫助她的兩個孩子做功課。",
+      "currently": "游庭瑄與丈夫李昇峰和兒子鄭傑丞住在一起，她正在教授哲學課程並撰寫研究論文。她還幫助她的兩個孩子做功課。",
       "action": {
         "event": {
-          "subject": "梅",
+          "subject": "游庭瑄",
           "predicate": "此時",
           "object": "與女兒討論今天的課程內容",
           "describe": "與女兒討論今天的課程內容",
@@ -1427,8 +1427,8 @@
         69
       ]
     },
-    "約翰": {
-      "config_path": "assets/village/agents/約翰/agent.json",
+    "李昇峰": {
+      "config_path": "assets/village/agents/李昇峰/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -1677,25 +1677,25 @@
       },
       "chats": [
         [
-          "約翰",
-          "梅，女兒在討論今天的課程嗎？我準備九點半去開藥店了，今天有什麼特別的計劃嗎？"
+          "李昇峰",
+          "游庭瑄，女兒在討論今天的課程嗎？我準備九點半去開藥店了，今天有什麼特別的計劃嗎？"
         ],
         [
-          "梅",
-          "約翰，女兒正在和我討論今天的哲學課程內容。今天好像沒有特別的計劃，只是希望在下午有空的時候能多花些時間寫研究論文。你準備好了就去開藥店吧，祝你好運！"
+          "游庭瑄",
+          "李昇峰，女兒正在和我討論今天的哲學課程內容。今天好像沒有特別的計劃，只是希望在下午有空的時候能多花些時間寫研究論文。你準備好了就去開藥店吧，祝你好運！"
         ]
       ],
-      "currently": "約翰與妻子梅和兒子埃迪住在一起，在柳樹市場和藥店開了一家藥店。他還參加了線上課程，以了解最新的藥物和治療方法。約翰也很好奇誰將參加下個月的地方市長選舉，他向每個人詢問誰將參加選舉。",
+      "currently": "李昇峰與妻子游庭瑄和兒子鄭傑丞住在一起，在柳樹市場和藥店開了一家藥店。他還參加了線上課程，以了解最新的藥物和治療方法。李昇峰也很好奇誰將參加下個月的地方市長選舉，他向每個人詢問誰將參加選舉。",
       "action": {
         "event": {
-          "subject": "約翰",
+          "subject": "李昇峰",
           "predicate": "對話",
-          "object": "梅",
-          "describe": "約翰準備去開藥店，梅和女兒討論哲學課程，下午希望有空寫研究論文。",
+          "object": "游庭瑄",
+          "describe": "李昇峰準備去開藥店，游庭瑄和女兒討論哲學課程，下午希望有空寫研究論文。",
           "address": [
             "the Ville",
             "林氏家族的房子",
-            "梅和約翰的臥室",
+            "游庭瑄和李昇峰的臥室",
             "床"
           ],
           "emoji": "💬"
@@ -1709,8 +1709,8 @@
         74
       ]
     },
-    "埃迪": {
-      "config_path": "assets/village/agents/埃迪/agent.json",
+    "鄭傑丞": {
+      "config_path": "assets/village/agents/鄭傑丞/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -1946,10 +1946,10 @@
         }
       },
       "chats": [],
-      "currently": "埃迪正在為他的大學班級做音樂合成項目。他也在上課，學習更多的音樂理論。",
+      "currently": "鄭傑丞正在為他的大學班級做音樂合成項目。他也在上課，學習更多的音樂理論。",
       "action": {
         "event": {
-          "subject": "埃迪",
+          "subject": "鄭傑丞",
           "predicate": "此時",
           "object": "制作早餐",
           "describe": "制作早餐",
@@ -1982,8 +1982,8 @@
         66
       ]
     },
-    "亞瑟": {
-      "config_path": "assets/village/agents/亞瑟/agent.json",
+    "陳冠佑": {
+      "config_path": "assets/village/agents/陳冠佑/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -2219,10 +2219,10 @@
         }
       },
       "chats": [],
-      "currently": "亞瑟在鎮上經營著一家很受歡迎的酒吧，這家酒吧已經存在了10年。他還學習了更多關於調酒的知識，並創造了獨特的雞尾酒。",
+      "currently": "陳冠佑在鎮上經營著一家很受歡迎的酒吧，這家酒吧已經存在了10年。他還學習了更多關於調酒的知識，並創造了獨特的雞尾酒。",
       "action": {
         "event": {
-          "subject": "亞瑟",
+          "subject": "陳冠佑",
           "predicate": "此時",
           "object": "補充吧檯上的酒品和調味品",
           "describe": "補充吧檯上的酒品和調味品",
@@ -2255,8 +2255,8 @@
         18
       ]
     },
-    "伊莎貝拉": {
-      "config_path": "assets/village/agents/伊莎貝拉/agent.json",
+    "蔡宗陞": {
+      "config_path": "assets/village/agents/蔡宗陞/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -2498,10 +2498,10 @@
         }
       },
       "chats": [],
-      "currently": "伊莎貝拉計劃於2月14日下午5點在霍布斯咖啡館與她的顧客舉行情人節派對。她正在收集聚會材料，並告訴大家在2月14日下午5點至7點在霍布斯咖啡館參加聚會。",
+      "currently": "蔡宗陞計劃於2月14日下午5點在霍布斯咖啡館與她的顧客舉行情人節派對。她正在收集聚會材料，並告訴大家在2月14日下午5點至7點在霍布斯咖啡館參加聚會。",
       "action": {
         "event": {
-          "subject": "伊莎貝拉",
+          "subject": "蔡宗陞",
           "predicate": "此時",
           "object": "與顧客聊天並了解他們的需求",
           "describe": "與顧客聊天並了解他們的需求",

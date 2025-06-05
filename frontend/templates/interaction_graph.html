@@ -96,41 +96,41 @@
     // 模擬數據 - 實際使用時這些數據會從後端傳入
     const interactionData = {
       "nodes": [
-        {"id": "阿伊莎", "group": 1},
-        {"id": "克勞斯", "group": 1},
-        {"id": "瑪麗亞", "group": 1},
-        {"id": "沃爾夫岡", "group": 1},
-        {"id": "梅", "group": 2},
-        {"id": "約翰", "group": 2},
-        {"id": "埃迪", "group": 2},
-        {"id": "亞瑟", "group": 3},
-        {"id": "伊莎貝拉", "group": 3}
+        {"id": "盧品蓉", "group": 1},
+        {"id": "魏祈紘", "group": 1},
+        {"id": "莊于萱", "group": 1},
+        {"id": "施宇鴻", "group": 1},
+        {"id": "游庭瑄", "group": 2},
+        {"id": "李昇峰", "group": 2},
+        {"id": "鄭傑丞", "group": 2},
+        {"id": "陳冠佑", "group": 3},
+        {"id": "蔡宗陞", "group": 3}
       ],
       "links": [
-        {"source": "阿伊莎", "target": "克勞斯", "value": 15},
-        {"source": "瑪麗亞", "target": "沃爾夫岡", "value": 12},
-        {"source": "梅", "target": "約翰", "value": 25},
-        {"source": "埃迪", "target": "梅", "value": 8},
-        {"source": "亞瑟", "target": "伊莎貝拉", "value": 18},
-        {"source": "阿伊莎", "target": "瑪麗亞", "value": 6},
-        {"source": "克勞斯", "target": "埃迪", "value": 9}
+        {"source": "盧品蓉", "target": "魏祈紘", "value": 15},
+        {"source": "莊于萱", "target": "施宇鴻", "value": 12},
+        {"source": "游庭瑄", "target": "李昇峰", "value": 25},
+        {"source": "鄭傑丞", "target": "游庭瑄", "value": 8},
+        {"source": "陳冠佑", "target": "蔡宗陞", "value": 18},
+        {"source": "盧品蓉", "target": "莊于萱", "value": 6},
+        {"source": "魏祈紘", "target": "鄭傑丞", "value": 9}
       ]
     };
     
     const chatLengthData = {
       "nodes": interactionData.nodes,
       "links": [
-        {"source": "阿伊莎", "target": "克勞斯", "length": 450},
-        {"source": "瑪麗亞", "target": "沃爾夫岡", "length": 320},
-        {"source": "梅", "target": "約翰", "length": 680},
-        {"source": "埃迪", "target": "梅", "length": 190},
-        {"source": "亞瑟", "target": "伊莎貝拉", "length": 520},
-        {"source": "阿伊莎", "target": "瑪麗亞", "length": 180},
-        {"source": "克勞斯", "target": "埃迪", "length": 240}
+        {"source": "盧品蓉", "target": "魏祈紘", "length": 450},
+        {"source": "莊于萱", "target": "施宇鴻", "length": 320},
+        {"source": "游庭瑄", "target": "李昇峰", "length": 680},
+        {"source": "鄭傑丞", "target": "游庭瑄", "length": 190},
+        {"source": "陳冠佑", "target": "蔡宗陞", "length": 520},
+        {"source": "盧品蓉", "target": "莊于萱", "length": 180},
+        {"source": "魏祈紘", "target": "鄭傑丞", "length": 240}
       ]
     };
     
-    const personaNames = ["阿伊莎", "克勞斯", "瑪麗亞", "沃爾夫岡", "梅", "約翰", "埃迪", "亞瑟", "伊莎貝拉"];
+    const personaNames = ["盧品蓉", "魏祈紘", "莊于萱", "施宇鴻", "游庭瑄", "李昇峰", "鄭傑丞", "陳冠佑", "蔡宗陞"];
 
     // 全局變數
     let forceDirectedSvg = null;

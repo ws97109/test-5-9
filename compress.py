@@ -1,6 +1,7 @@
 import os
 import json
 import argparse
+import collections
 from datetime import datetime
 
 from modules.maze import Maze
@@ -57,6 +58,39 @@ def insert_frame0(init_pos, movement, agent_name):
         "currently": json_data["currently"],
         "scratch": json_data["scratch"],
     }
+def extract_interaction_data(checkpoints_folder):
+    """提取AI與物品/地區的交互數據"""
+    object_interactions = collections.defaultdict(int)
+    location_interactions = collections.defaultdict(int)
+    
+    conversation_file = "conversation.json"
+    files = sorted(os.listdir(checkpoints_folder))
+    json_files = [f for f in files if f.endswith(".json") and f != conversation_file]
+    
+    for file_name in json_files:
+        file_path = os.path.join(checkpoints_folder, file_name)
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            
+        for agent_name, agent_data in data.get("agents", {}).items():
+            action = agent_data.get("action", {})
+            
+            # AI與物品交互
+            if "event" in action:
+                event = action["event"]
+                obj = event.get("object", "")
+                if obj and obj != "空閒" and obj != "idle":
+                    object_interactions[(agent_name, obj)] += 1
+            
+            # AI與地區交互  
+            if "event" in action:
+                event = action["event"]
+                address = event.get("address", [])
+                if len(address) >= 2:
+                    location = address[-1]  # 取最後一級地址（具體地點）
+                    location_interactions[(agent_name, location)] += 1
+    
+    return object_interactions, location_interactions
 
 
 # 從所有存檔文件中提取數據（用於回放）
@@ -182,11 +216,25 @@ def generate_movement(checkpoints_folder, compressed_folder, compressed_file):
                             "action": action,
                         }
                 all_movement["conversation"][step_time] = step_conversation
-
-    # 保存數據
-    with open(movement_file, "w", encoding="utf-8") as f:
-        f.write(json.dumps(result, indent=2, ensure_ascii=False))
-
+    object_interactions, location_interactions = extract_interaction_data(checkpoints_folder)
+    
+    # 轉換為前端需要的格式
+    interaction_data = {
+        "object_interactions": [
+            {"agent": agent, "object": obj, "count": count}
+            for (agent, obj), count in object_interactions.items()
+        ],
+        "location_interactions": [
+            {"agent": agent, "location": location, "count": count}
+            for (agent, location), count in location_interactions.items()
+        ]
+    }
+    
+    # 保存交互數據
+    interaction_file = os.path.join(compressed_folder, "interactions.json")
+    with open(interaction_file, "w", encoding="utf-8") as f:
+        f.write(json.dumps(interaction_data, indent=2, ensure_ascii=False))
+    
     return result
 
 

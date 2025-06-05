@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Reverie - AI與物品/地區交互視覺化</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      font-family: '微軟雅黑', 'Microsoft YaHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .main-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      margin: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .chart-container {
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .tab-content {
+      padding-top: 20px;
+    }
+    
+    .nav-tabs > li.active > a {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 8px 8px 0 0;
+    }
+    
+    .nav-tabs > li > a {
+      border: none;
+      border-radius: 8px 8px 0 0;
+      margin-right: 5px;
+      color: #667eea;
+      font-weight: bold;
+    }
+    
+    .controls {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 10px 0;
+      text-align: center;
+    }
+    
+    .btn-control {
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      margin: 0 5px;
+      color: #333;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-control:hover {
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .tooltip {
+      position: absolute;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border-radius: 8px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .stats-container {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      flex: 1;
+      margin: 0 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-container">
+    <div class="row">
+      <div class="col-md-12">
+        <a href="/" class="btn btn-primary" style="border-radius: 20px; padding: 10px 20px;">🏠 返回主頁</a>
+        <h2 class="text-center" style="color: #667eea; margin: 20px 0; font-weight: bold;">
+           AI 智能體交互分析儀表板
+        </h2>
+        
+        <!-- 統計卡片 -->
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-number" id="total-ai-count">0</div>
+            <div class="stat-label">AI 智能體</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="total-object-count">0</div>
+            <div class="stat-label">互動物品</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="total-location-count">0</div>
+            <div class="stat-label">活動地區</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="total-interaction-count">0</div>
+            <div class="stat-label">總交互次數</div>
+          </div>
+        </div>
+        
+        <!-- 頁籤導航 -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active">
+            <a href="#circular-object" aria-controls="circular-object" role="tab" data-toggle="tab">
+              🔧 AI-物品交互圓環圖
+            </a>
+          </li>
+          <li role="presentation">
+            <a href="#circular-location" aria-controls="circular-location" role="tab" data-toggle="tab">
+              🏠 AI-地區交互圓環圖
+            </a>
+          </li>
+          <li role="presentation">
+            <a href="#bar-object" aria-controls="bar-object" role="tab" data-toggle="tab">
+              📊 AI-物品交互長條圖
+            </a>
+          </li>
+          <li role="presentation">
+            <a href="#bar-location" aria-controls="bar-location" role="tab" data-toggle="tab">
+              📈 AI-地區交互長條圖
+            </a>
+          </li>
+        </ul>
+        
+        <!-- 頁籤內容 -->
+        <div class="tab-content">
+          <!-- AI與物品圓環交互圖 -->
+          <div role="tabpanel" class="tab-pane active" id="circular-object">
+            <div class="controls">
+              <button id="object-zoom-in" class="btn btn-control">🔍 放大</button>
+              <button id="object-zoom-out" class="btn btn-control">🔍 縮小</button>
+              <button id="object-reset" class="btn btn-control">重置</button>
+            </div>
+            <div class="chart-container" id="object-chart" style="height: 700px;"></div>
+          </div>
+          
+          <!-- AI與地區圓環交互圖 -->
+          <div role="tabpanel" class="tab-pane" id="circular-location">
+            <div class="controls">
+              <button id="location-zoom-in" class="btn btn-control">🔍 放大</button>
+              <button id="location-zoom-out" class="btn btn-control">🔍 縮小</button>
+              <button id="location-reset" class="btn btn-control">重置</button>
+            </div>
+            <div class="chart-container" id="location-chart" style="height: 700px;"></div>
+          </div>
+          
+          <!-- AI與物品長條圖 -->
+          <div role="tabpanel" class="tab-pane" id="bar-object">
+            <div class="chart-container" id="bar-object-container" style="height: 700px;"></div>
+          </div>
+          
+          <!-- AI與地區長條圖 -->
+          <div role="tabpanel" class="tab-pane" id="bar-location">
+            <div class="chart-container" id="bar-location-container" style="height: 700px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  
+  <script>
+    // 從後端傳入的數據
+    const interactionData = {{ interaction_data | tojson }};
+    const personaNames = {{ persona_names | tojson }};
+    
+    // 全局變量
+    let objectSvg, locationSvg, objectZoom, locationZoom;
+    let tooltip;
+    let animationRunning = false;
+    
+    // 顏色方案
+    const colors = {
+      ai: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE'],
+      object: ['#FFD93D', '#6BCF7F', '#4D96FF', '#FF9F43', '#9C88FF', '#FCA86F', '#5F7ADB', '#52C4B0'],
+      location: ['#FF8A80', '#82B1FF', '#B39DDB', '#C5E1A5', '#FFD54F', '#FFAB91', '#80DEEA', '#F8BBD9']
+    };
+    
+    // 當頁面載入完成後初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Interaction Data:', interactionData);
+      console.log('Persona Names:', personaNames);
+      
+      initializeTooltip();
+      updateStatistics();
+      createCircularObjectChart();
+      bindControlEvents();
+      
+      // 綁定頁籤切換事件
+      $('.nav-tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        const target = $(e.target).attr("href");
+        console.log('Tab switched to:', target);
+        
+        // 延遲100ms確保DOM更新完成
+        setTimeout(() => {
+          if (target === '#circular-location') {
+            createCircularLocationChart();
+          } else if (target === '#bar-object') {
+            createObjectBarChart();
+          } else if (target === '#bar-location') {
+            createLocationBarChart();
+          }
+        }, 100);
+      });
+    });
+    
+    function initializeTooltip() {
+      tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+    }
+    
+    function updateStatistics() {
+      const aiCount = personaNames.length;
+      const objectCount = new Set(interactionData.object_interactions.map(d => d.object)).size;
+      const locationCount = new Set(interactionData.location_interactions.map(d => d.location)).size;
+      const totalInteractions = interactionData.object_interactions.reduce((sum, d) => sum + d.count, 0) +
+                               interactionData.location_interactions.reduce((sum, d) => sum + d.count, 0);
+      
+      document.getElementById('total-ai-count').textContent = aiCount;
+      document.getElementById('total-object-count').textContent = objectCount;
+      document.getElementById('total-location-count').textContent = locationCount;
+      document.getElementById('total-interaction-count').textContent = totalInteractions;
+    }
+    
+    // 改進的圓環圖 - 減少擁擠
+    function createCircularObjectChart() {
+      d3.select("#object-chart").html("");
+      
+      const width = document.querySelector("#object-chart").clientWidth;
+      const height = 700;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const outerRadius = Math.min(width, height) / 2 - 120; // 增加邊距
+      const innerRadius = outerRadius - 120; // 減少圓環寬度
+      
+      const svg = d3.select("#object-chart")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+      
+      objectSvg = svg;
+      
+      objectZoom = d3.zoom()
+        .scaleExtent([0.3, 5]) // 允許更大的縮放範圍
+        .on("zoom", function(event) {
+          g.attr("transform", event.transform);
+        });
+      
+      svg.call(objectZoom);
+      
+      const g = svg.append("g");
+      
+      // 準備數據
+      const data = interactionData.object_interactions;
+      const objects = [...new Set(data.map(d => d.object))];
+      
+      if (objects.length === 0) {
+        g.append("text")
+          .attr("x", centerX)
+          .attr("y", centerY)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "18px")
+          .attr("fill", "#666")
+          .text("暫無物品交互數據");
+        return;
+      }
+      
+      // 過濾低頻交互，減少視覺混亂
+      const minInteractions = 3;
+      const filteredData = data.filter(d => d.count >= minInteractions);
+      const filteredObjects = [...new Set(filteredData.map(d => d.object))];
+      
+      const aiAngleStep = (2 * Math.PI) / personaNames.length;
+      const objectAngleStep = (2 * Math.PI) / filteredObjects.length;
+      
+      // 創建AI節點（內圈）
+      const aiNodes = personaNames.map((name, i) => ({
+        id: name,
+        type: 'ai',
+        name: name,
+        angle: i * aiAngleStep,
+        x: centerX + innerRadius * Math.cos(i * aiAngleStep),
+        y: centerY + innerRadius * Math.sin(i * aiAngleStep),
+        color: colors.ai[i % colors.ai.length]
+      }));
+      
+      // 創建物品節點（外圈）- 大幅增加半徑，拉開距離
+      const objectNodes = filteredObjects.map((obj, i) => ({
+        id: obj,
+        type: 'object',
+        name: obj,
+        angle: i * objectAngleStep,
+        x: centerX + (outerRadius + 60) * Math.cos(i * objectAngleStep), // 再增加20像素間距
+        y: centerY + (outerRadius + 60) * Math.sin(i * objectAngleStep),
+        color: colors.object[i % colors.object.length]
+      }));
+      
+      // 創建連接線
+      const connections = filteredData.map(d => {
+        const aiNode = aiNodes.find(n => n.name === d.agent);
+        const objectNode = objectNodes.find(n => n.name === d.object);
+        if (!aiNode || !objectNode) return null;
+        return {
+          source: aiNode,
+          target: objectNode,
+          count: d.count,
+          agent: d.agent,
+          object: d.object
+        };
+      }).filter(d => d !== null);
+      
+      // 繪製連接線 - 更細，減少視覺干擾
+      const lines = g.selectAll(".connection-line")
+        .data(connections)
+        .enter()
+        .append("line")
+        .attr("class", "connection-line")
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y)
+        .attr("stroke", d => d.source.color)
+        .attr("stroke-width", d => Math.min(Math.sqrt(d.count) + 1, 5)) // 限制最大線寬
+        .attr("stroke-opacity", 0.4) // 降低默認透明度
+        .on("mouseover", function(event, d) {
+          d3.select(this).attr("stroke-opacity", 0.9).attr("stroke-width", Math.sqrt(d.count) * 2 + 2);
+          showTooltip(event, `${d.agent} ↔ ${d.object}<br/>交互次數: ${d.count}`);
+        })
+        .on("mouseout", function(event, d) {
+          d3.select(this).attr("stroke-opacity", 0.4).attr("stroke-width", Math.min(Math.sqrt(d.count) + 1, 5));
+          hideTooltip();
+        });
+      
+      // 只在高頻交互上顯示數字，避免過於擁擠
+      const lineLabels = g.selectAll(".line-label")
+        .data(connections.filter(d => d.count > 5)) // 只顯示高頻交互的數字
+        .enter()
+        .append("text")
+        .attr("class", "line-label")
+        .attr("x", d => (d.source.x + d.target.x) / 2)
+        .attr("y", d => (d.source.y + d.target.y) / 2)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "9px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .attr("opacity", 0.7)
+        .text(d => d.count);
+      
+      // 繪製AI節點 - 稍微調小
+      const aiGroup = g.selectAll(".ai-node")
+        .data(aiNodes)
+        .enter()
+        .append("g")
+        .attr("class", "ai-node")
+        .attr("transform", d => `translate(${d.x}, ${d.y})`);
+      
+      aiGroup.append("circle")
+        .attr("r", 24) // 稍微增大AI節點
+        .attr("fill", d => d.color)
+        .attr("stroke", "#FFF")
+        .attr("stroke-width", 3)
+        .on("mouseover", function(event, d) {
+          d3.select(this).transition().duration(200).attr("r", 28);
+          highlightConnections(d.name, 'ai');
+          const connectCount = connections.filter(c => c.agent === d.name).length;
+          const totalCount = connections.filter(c => c.agent === d.name).reduce((sum, c) => sum + c.count, 0);
+          showTooltip(event, `🤖 ${d.name}<br/>連接物品: ${connectCount}<br/>總交互: ${totalCount}`);
+        })
+        .on("mouseout", function(event, d) {
+          d3.select(this).transition().duration(200).attr("r", 24);
+          resetHighlight();
+          hideTooltip();
+        });
+      
+      aiGroup.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "11px")
+        .attr("fill", "#FFF")
+        .attr("font-weight", "bold")
+        .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
+        .text(d => d.name);
+      
+      // 繪製物品節點 - 調小並簡化
+      const objectGroup = g.selectAll(".object-node")
+        .data(objectNodes)
+        .enter()
+        .append("g")
+        .attr("class", "object-node")
+        .attr("transform", d => `translate(${d.x}, ${d.y})`);
+      
+      objectGroup.append("rect")
+        .attr("x", -32)
+        .attr("y", -22)
+        .attr("width", 64)
+        .attr("height", 44)
+        .attr("rx", 10)
+        .attr("fill", d => d.color)
+        .attr("stroke", "#FFF")
+        .attr("stroke-width", 3)
+        .on("mouseover", function(event, d) {
+          d3.select(this).transition().duration(200).attr("width", 72).attr("height", 50).attr("x", -36).attr("y", -25);
+          highlightConnections(d.name, 'object');
+          const connectCount = connections.filter(c => c.object === d.name).length;
+          const totalCount = connections.filter(c => c.object === d.name).reduce((sum, c) => sum + c.count, 0);
+          showTooltip(event, `🔧 ${d.name}<br/>使用AI: ${connectCount}<br/>總交互: ${totalCount}`);
+        })
+        .on("mouseout", function(event, d) {
+          d3.select(this).transition().duration(200).attr("width", 64).attr("height", 44).attr("x", -32).attr("y", -22);
+          resetHighlight();
+          hideTooltip();
+        });
+      
+      objectGroup.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "13px")
+        .attr("fill", "#FFF")
+        .attr("font-weight", "bold")
+        .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
+        .text(d => {
+          // 更智能的文字處理 - 根據文字長度調整顯示
+          if (d.name.length <= 10) {
+            return d.name;
+          } else if (d.name.length <= 12) {
+            return d.name.substring(0, 10) + '..';
+          } else {
+            return d.name.substring(0, 9) + '...';
+          }
+        });
+      
+      // 添加標籤
+      g.append("text")
+        .attr("x", centerX)
+        .attr("y", centerY - innerRadius + 10) // 調整AI標籤位置
+        .attr("text-anchor", "middle")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .text("🤖 AI 智能體");
+      
+      g.append("text")
+        .attr("x", centerX)
+        .attr("y", centerY + outerRadius + 130) // 相應調整標籤位置
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .text("🔧 互動物品");
+      
+      // 添加過濾提示
+      if (data.length > filteredData.length) {
+        g.append("text")
+          .attr("x", centerX)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "12px")
+          .attr("fill", "#666")
+          .text(`顯示 ${minInteractions} 次以上交互 (${filteredData.length}/${data.length})`);
+      }
+      
+      // 高亮連接函數
+      function highlightConnections(name, type) {
+        lines.style("stroke-opacity", d => {
+          if (type === 'ai' && d.agent === name) return 0.9;
+          if (type === 'object' && d.object === name) return 0.9;
+          return 0.1;
+        });
+        
+        lineLabels.style("opacity", d => {
+          if (type === 'ai' && d.agent === name) return 1;
+          if (type === 'object' && d.object === name) return 1;
+          return 0.2;
+        });
+      }
+      
+      function resetHighlight() {
+        lines.style("stroke-opacity", 0.4);
+        lineLabels.style("opacity", 0.7);
+      }
+    }
+    
+    // 創建物品交互長條圖
+    function createObjectBarChart() {
+      d3.select("#bar-object-container").html("");
+      
+      const width = document.querySelector("#bar-object-container").clientWidth;
+      const height = 700;
+      const margin = {top: 60, right: 100, bottom: 120, left: 150};
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+      
+      const svg = d3.select("#bar-object-container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+      
+      const g = svg.append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+      
+      // 準備數據
+      const data = interactionData.object_interactions;
+      if (data.length === 0) {
+        svg.append("text")
+          .attr("x", width / 2)
+          .attr("y", height / 2)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "18px")
+          .attr("fill", "#666")
+          .text("暫無物品交互數據");
+        return;
+      }
+      
+      // 按交互次數排序，取前20個
+      const sortedData = data.sort((a, b) => b.count - a.count).slice(0, 20);
+      
+      // 創建組合標籤 (AI + 物品)
+      const chartData = sortedData.map(d => ({
+        label: `${d.agent} → ${d.object}`,
+        agent: d.agent,
+        object: d.object,
+        count: d.count,
+        color: colors.ai[personaNames.indexOf(d.agent) % colors.ai.length]
+      }));
+      
+      // 創建比例尺
+      const xScale = d3.scaleLinear()
+        .domain([0, d3.max(chartData, d => d.count)])
+        .range([0, chartWidth]);
+      
+      const yScale = d3.scaleBand()
+        .domain(chartData.map(d => d.label))
+        .range([0, chartHeight])
+        .padding(0.2);
+      
+      // 創建軸
+      const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
+      const yAxis = d3.axisLeft(yScale);
+      
+      g.append("g")
+        .attr("transform", `translate(0, ${chartHeight})`)
+        .call(xAxis)
+        .append("text")
+        .attr("x", chartWidth / 2)
+        .attr("y", 40)
+        .attr("fill", "#333")
+        .style("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
+        .text("交互次數");
+      
+      g.append("g")
+        .call(yAxis)
+        .selectAll("text")
+        .style("font-size", "11px")
+        .style("font-weight", "bold");
+      
+      // 創建長條
+      const bars = g.selectAll(".bar")
+        .data(chartData)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", 0)
+        .attr("y", d => yScale(d.label))
+        .attr("width", 0)
+        .attr("height", yScale.bandwidth())
+        .attr("fill", d => d.color)
+        .attr("opacity", 0.8)
+        .on("mouseover", function(event, d) {
+          d3.select(this).attr("opacity", 1);
+          showTooltip(event, `${d.agent} 使用 ${d.object}<br/>交互次數: ${d.count}`);
+        })
+        .on("mouseout", function(event, d) {
+          d3.select(this).attr("opacity", 0.8);
+          hideTooltip();
+        });
+      
+      // 動畫效果
+      bars.transition()
+        .duration(1000)
+        .delay((d, i) => i * 50)
+        .attr("width", d => xScale(d.count));
+      
+      // 添加數值標籤
+      const labels = g.selectAll(".bar-label")
+        .data(chartData)
+        .enter()
+        .append("text")
+        .attr("class", "bar-label")
+        .attr("x", d => xScale(d.count) + 5)
+        .attr("y", d => yScale(d.label) + yScale.bandwidth() / 2)
+        .attr("alignment-baseline", "middle")
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .style("fill", "#333")
+        .style("opacity", 0)
+        .text(d => d.count);
+      
+      // 標籤動畫
+      labels.transition()
+        .duration(1000)
+        .delay((d, i) => i * 50 + 500)
+        .style("opacity", 1);
+      
+      // 添加標題
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", 30)
+        .attr("text-anchor", "middle")
+        .style("font-size", "18px")
+        .style("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .text("📊 AI 與物品交互次數排行榜");
+    }
+    
+    function createBubbleChart() {
+      d3.select("#bubble-container").html("");
+      
+      const width = document.querySelector("#bubble-container").clientWidth;
+      const height = 700;
+      
+      const svg = d3.select("#bubble-container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+      
+      // 準備氣泡數據
+      const bubbleData = [];
+      
+      // 添加AI氣泡
+      personaNames.forEach((ai, i) => {
+        const objectInteractions = interactionData.object_interactions.filter(d => d.agent === ai);
+        const locationInteractions = interactionData.location_interactions.filter(d => d.agent === ai);
+        const totalInteractions = objectInteractions.reduce((sum, d) => sum + d.count, 0) + 
+                                 locationInteractions.reduce((sum, d) => sum + d.count, 0);
+        
+        if (totalInteractions > 0) {
+          bubbleData.push({
+            id: ai,
+            type: 'ai',
+            name: ai,
+            value: totalInteractions,
+            details: {
+              objects: objectInteractions.length,
+              locations: locationInteractions.length,
+              total: totalInteractions
+            },
+            color: colors.ai[i % colors.ai.length]
+          });
+        }
+      });
+      
+      if (bubbleData.length === 0) {
+        svg.append("text")
+          .attr("x", width / 2)
+          .attr("y", height / 2)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "18px")
+          .attr("fill", "#666")
+          .text("暫無足夠數據生成氣泡圖");
+        return;
+      }
+      
+      // 創建氣泡圖布局
+      const simulation = d3.forceSimulation(bubbleData)
+        .force("charge", d3.forceManyBody().strength(-100))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(d => Math.sqrt(d.value) * 2 + 10));
+      
+      // 創建氣泡
+      const bubbles = svg.selectAll(".bubble")
+        .data(bubbleData)
+        .enter()
+        .append("g")
+        .attr("class", "bubble");
+      
+      bubbles.append("circle")
+        .attr("r", d => Math.sqrt(d.value) * 2 + 10)
+        .attr("fill", d => d.color)
+        .attr("stroke", "#FFF")
+        .attr("stroke-width", 2)
+        .attr("opacity", 0.8);
+      
+      bubbles.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "10px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#FFF")
+        .text(d => d.name);
+      
+      // 更新位置
+      simulation.on("tick", () => {
+        bubbles.attr("transform", d => `translate(${d.x}, ${d.y})`);
+      });
+      
+      // 添加標題
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", 30)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .text("💭 AI 交互強度氣泡圖");
+    }
+    
+    function createSankeyChart() {
+      d3.select("#sankey-container").html("");
+      
+      const width = document.querySelector("#sankey-container").clientWidth;
+      const height = 700;
+      
+      const svg = d3.select("#sankey-container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+      
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .text("🌊 交互流向圖 (開發中)");
+    }
+      d3.select("#location-chart").html("");
+      
+      const width = document.querySelector("#location-chart").clientWidth;
+      const height = 700;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const outerRadius = Math.min(width, height) / 2 - 120;
+      const innerRadius = outerRadius - 120;
+      
+      const svg = d3.select("#location-chart")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+      
+      locationSvg = svg;
+      
+      locationZoom = d3.zoom()
+        .scaleExtent([0.3, 5])
+        .on("zoom", function(event) {
+          g.attr("transform", event.transform);
+        });
+      
+      svg.call(locationZoom);
+      
+      const g = svg.append("g");
+      
+      // 準備數據
+      const data = interactionData.location_interactions;
+      const locations = [...new Set(data.map(d => d.location))];
+      
+      if (locations.length === 0) {
+        g.append("text")
+          .attr("x", centerX)
+          .attr("y", centerY)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "18px")
+          .attr("fill", "#666")
+          .text("暫無地區交互數據");
+        return;
+      }
+      
+      // 過濾低頻交互
+      const minInteractions = 2;
+      const filteredData = data.filter(d => d.count >= minInteractions);
+      const filteredLocations = [...new Set(filteredData.map(d => d.location))];
+      
+      const aiAngleStep = (2 * Math.PI) / personaNames.length;
+      const locationAngleStep = (2 * Math.PI) / filteredLocations.length;
+      
+      // 創建AI節點（內圈）
+      const aiNodes = personaNames.map((name, i) => ({
+        id: name,
+        type: 'ai',
+        name: name,
+        angle: i * aiAngleStep,
+        x: centerX + innerRadius * Math.cos(i * aiAngleStep),
+        y: centerY + innerRadius * Math.sin(i * aiAngleStep),
+        color: colors.ai[i % colors.ai.length]
+      }));
+      
+      // 創建地區節點（外圈）- 同樣大幅增加間距
+      const locationNodes = filteredLocations.map((loc, i) => ({
+        id: loc,
+        type: 'location',
+        name: loc,
+        angle: i * locationAngleStep,
+        x: centerX + (outerRadius + 60) * Math.cos(i * locationAngleStep), // 與物品圖保持一致
+        y: centerY + (outerRadius + 60) * Math.sin(i * locationAngleStep),
+        color: colors.location[i % colors.location.length]
+      }));
+      
+      // 創建連接線
+      const connections = filteredData.map(d => {
+        const aiNode = aiNodes.find(n => n.name === d.agent);
+        const locationNode = locationNodes.find(n => n.name === d.location);
+        if (!aiNode || !locationNode) return null;
+        return {
+          source: aiNode,
+          target: locationNode,
+          count: d.count,
+          agent: d.agent,
+          location: d.location
+        };
+      }).filter(d => d !== null);
+      
+      // 繪製背景圓環
+      g.append("circle")
+        .attr("cx", centerX)
+        .attr("cy", centerY)
+        .attr("r", innerRadius - 30) // 調整內圈背景圓環
+        .attr("fill", "none")
+        .attr("stroke", "#E3F2FD")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "5,5");
+      
+      g.append("circle")
+        .attr("cx", centerX)
+        .attr("cy", centerY)
+        .attr("r", outerRadius + 20)
+        .attr("fill", "none")
+        .attr("stroke", "#FFE0E6")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "5,5");
+      
+      // 繪製連接線
+      const lines = g.selectAll(".connection-line")
+        .data(connections)
+        .enter()
+        .append("line")
+        .attr("class", "connection-line")
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y)
+        .attr("stroke", d => d.source.color)
+        .attr("stroke-width", d => Math.min(Math.sqrt(d.count) + 1, 5))
+        .attr("stroke-opacity", 0.4)
+        .on("mouseover", function(event, d) {
+          d3.select(this).attr("stroke-opacity", 0.9).attr("stroke-width", Math.sqrt(d.count) * 2 + 2);
+          showTooltip(event, `${d.agent} ↔ ${d.location}<br/>活動次數: ${d.count}`);
+        })
+        .on("mouseout", function(event, d) {
+          d3.select(this).attr("stroke-opacity", 0.4).attr("stroke-width", Math.min(Math.sqrt(d.count) + 1, 5));
+          hideTooltip();
+        });
+      
+      // 繪製連接線上的數字
+      const lineLabels = g.selectAll(".line-label")
+        .data(connections.filter(d => d.count > 3))
+        .enter()
+        .append("text")
+        .attr("class", "line-label")
+        .attr("x", d => (d.source.x + d.target.x) / 2)
+        .attr("y", d => (d.source.y + d.target.y) / 2)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "9px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .attr("opacity", 0.7)
+        .text(d => d.count);
+      
+      // 繪製AI節點
+      const aiGroup = g.selectAll(".ai-node")
+        .data(aiNodes)
+        .enter()
+        .append("g")
+        .attr("class", "ai-node")
+        .attr("transform", d => `translate(${d.x}, ${d.y})`);
+      
+      aiGroup.append("circle")
+        .attr("r", 20)
+        .attr("fill", d => d.color)
+        .attr("stroke", "#FFF")
+        .attr("stroke-width", 2)
+        .on("mouseover", function(event, d) {
+          d3.select(this).transition().duration(200).attr("r", 25);
+          highlightConnections(d.name, 'ai');
+          const connectCount = connections.filter(c => c.agent === d.name).length;
+          const totalCount = connections.filter(c => c.agent === d.name).reduce((sum, c) => sum + c.count, 0);
+          showTooltip(event, `🤖 ${d.name}<br/>活動地區: ${connectCount}<br/>總活動: ${totalCount}`);
+        })
+        .on("mouseout", function(event, d) {
+          d3.select(this).transition().duration(200).attr("r", 20);
+          resetHighlight();
+          hideTooltip();
+        });
+      
+      aiGroup.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "9px")
+        .attr("fill", "#FFF")
+        .attr("font-weight", "bold")
+        .text(d => d.name);
+      
+      // 繪製地區節點 - 六邊形
+      const locationGroup = g.selectAll(".location-node")
+        .data(locationNodes)
+        .enter()
+        .append("g")
+        .attr("class", "location-node")
+        .attr("transform", d => `translate(${d.x}, ${d.y})`);
+      
+      locationGroup.append("polygon")
+        .attr("points", d => {
+          const size = 26; // 再次增加六邊形大小
+          const points = [];
+          for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI) / 3;
+            const x = size * Math.cos(angle);
+            const y = size * Math.sin(angle);
+            points.push(`${x},${y}`);
+          }
+          return points.join(' ');
+        })
+        .attr("fill", d => d.color)
+        .attr("stroke", "#FFF")
+        .attr("stroke-width", 3)
+        .on("mouseover", function(event, d) {
+          d3.select(this).transition().duration(200).attr("points", () => {
+            const size = 30;
+            const points = [];
+            for (let i = 0; i < 6; i++) {
+              const angle = (i * Math.PI) / 3;
+              const x = size * Math.cos(angle);
+              const y = size * Math.sin(angle);
+              points.push(`${x},${y}`);
+            }
+            return points.join(' ');
+          });
+          highlightConnections(d.name, 'location');
+          const connectCount = connections.filter(c => c.location === d.name).length;
+          const totalCount = connections.filter(c => c.location === d.name).reduce((sum, c) => sum + c.count, 0);
+          showTooltip(event, `🏠 ${d.name}<br/>活動AI: ${connectCount}<br/>總活動: ${totalCount}`);
+        })
+        .on("mouseout", function(event, d) {
+          d3.select(this).transition().duration(200).attr("points", () => {
+            const size = 26;
+            const points = [];
+            for (let i = 0; i < 6; i++) {
+              const angle = (i * Math.PI) / 3;
+              const x = size * Math.cos(angle);
+              const y = size * Math.sin(angle);
+              points.push(`${x},${y}`);
+            }
+            return points.join(' ');
+          });
+          resetHighlight();
+          hideTooltip();
+        });
+      
+      locationGroup.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "11px")
+        .attr("fill", "#FFF")
+        .attr("font-weight", "bold")
+        .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
+        .text(d => {
+          // 更智能的文字處理
+          if (d.name.length <= 8) {
+            return d.name;
+          } else if (d.name.length <= 10) {
+            return d.name.substring(0, 8) + '..';
+          } else {
+            return d.name.substring(0, 7) + '...';
+          }
+        });
+      
+      // 添加標籤
+      g.append("text")
+        .attr("x", centerX)
+        .attr("y", centerY - innerRadius + 20)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .text("🤖 AI 智能體");
+      
+      g.append("text")
+        .attr("x", centerX)
+        .attr("y", centerY + outerRadius + 30)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .text("🏠 活動地區");
+      
+      // 添加過濾提示
+      if (data.length > filteredData.length) {
+        g.append("text")
+          .attr("x", centerX)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "12px")
+          .attr("fill", "#666")
+          .text(`顯示 ${minInteractions} 次以上活動 (${filteredData.length}/${data.length})`);
+      }
+      
+      // 高亮連接函數
+      function highlightConnections(name, type) {
+        lines.style("stroke-opacity", d => {
+          if (type === 'ai' && d.agent === name) return 0.9;
+          if (type === 'location' && d.location === name) return 0.9;
+          return 0.1;
+        });
+        
+        lineLabels.style("opacity", d => {
+          if (type === 'ai' && d.agent === name) return 1;
+          if (type === 'location' && d.location === name) return 1;
+          return 0.2;
+        });
+      }
+      
+      function resetHighlight() {
+        lines.style("stroke-opacity", 0.4);
+        lineLabels.style("opacity", 0.7);
+      }
+    }
+    
+    function createBubbleChart() {
+      d3.select("#bubble-container").html("");
+      
+      const width = document.querySelector("#bubble-container").clientWidth;
+      const height = 700;
+      
+      const svg = d3.select("#bubble-container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+      
+      // 準備氣泡數據
+      const bubbleData = [];
+      
+      // 添加AI氣泡
+      personaNames.forEach((ai, i) => {
+        const objectInteractions = interactionData.object_interactions.filter(d => d.agent === ai);
+        const locationInteractions = interactionData.location_interactions.filter(d => d.agent === ai);
+        const totalInteractions = objectInteractions.reduce((sum, d) => sum + d.count, 0) + 
+                                 locationInteractions.reduce((sum, d) => sum + d.count, 0);
+        
+        if (totalInteractions > 0) {
+          bubbleData.push({
+            id: ai,
+            type: 'ai',
+            name: ai,
+            value: totalInteractions,
+            details: {
+              objects: objectInteractions.length,
+              locations: locationInteractions.length,
+              total: totalInteractions
+            },
+            color: colors.ai[i % colors.ai.length]
+          });
+        }
+      });
+      
+      if (bubbleData.length === 0) {
+        svg.append("text")
+          .attr("x", width / 2)
+          .attr("y", height / 2)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "18px")
+          .attr("fill", "#666")
+          .text("暫無足夠數據生成氣泡圖");
+        return;
+      }
+      
+      // 創建氣泡圖布局
+      const simulation = d3.forceSimulation(bubbleData)
+        .force("charge", d3.forceManyBody().strength(-100))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(d => Math.sqrt(d.value) * 2 + 10));
+      
+      // 創建氣泡
+      const bubbles = svg.selectAll(".bubble")
+        .data(bubbleData)
+        .enter()
+        .append("g")
+        .attr("class", "bubble");
+      
+      bubbles.append("circle")
+        .attr("r", d => Math.sqrt(d.value) * 2 + 10)
+        .attr("fill", d => d.color)
+        .attr("stroke", "#FFF")
+        .attr("stroke-width", 2)
+        .attr("opacity", 0.8);
+      
+      bubbles.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "10px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#FFF")
+        .text(d => d.name);
+      
+      // 更新位置
+      simulation.on("tick", () => {
+        bubbles.attr("transform", d => `translate(${d.x}, ${d.y})`);
+      });
+      
+      // 添加標題
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", 30)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .text("💭 AI 交互強度氣泡圖");
+    }
+    
+    function createSankeyChart() {
+      d3.select("#sankey-container").html("");
+      
+      const width = document.querySelector("#sankey-container").clientWidth;
+      const height = 700;
+      
+      const svg = d3.select("#sankey-container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+      
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .attr("fill", "#2C3E50")
+        .text("🌊 交互流向圖 (開發中)");
+    }
+    
+    // 輔助函數
+    function showTooltip(event, content) {
+      tooltip.transition()
+        .duration(200)
+        .style("opacity", .9);
+      tooltip.html(content)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 28) + "px");
+    }
+    
+    function hideTooltip() {
+      tooltip.transition()
+        .duration(500)
+        .style("opacity", 0);
+    }
+    
+    function getIcon(type) {
+      switch(type) {
+        case 'ai': return '🤖';
+        case 'object': return '🔧';
+        case 'location': return '🏠';
+        default: return '•';
+      }
+    }
+    
+    // 綁定控制按鈕事件
+    function bindControlEvents() {
+      // 物品圖控制
+      document.getElementById('object-zoom-in').addEventListener('click', function() {
+        if (objectSvg && objectZoom) {
+          objectSvg.transition().duration(300).call(objectZoom.scaleBy, 1.5);
+        }
+      });
+      
+      document.getElementById('object-zoom-out').addEventListener('click', function() {
+        if (objectSvg && objectZoom) {
+          objectSvg.transition().duration(300).call(objectZoom.scaleBy, 0.67);
+        }
+      });
+      
+      document.getElementById('object-reset').addEventListener('click', function() {
+        if (objectSvg && objectZoom) {
+          objectSvg.transition().duration(750).call(objectZoom.transform, d3.zoomIdentity);
+        }
+      });
+      
+      document.getElementById('object-animate').addEventListener('click', function() {
+        if (!animationRunning) {
+          animateConnections('#object-chart');
+        }
+      });
+      
+      // 地區圖控制
+      document.getElementById('location-zoom-in').addEventListener('click', function() {
+        if (locationSvg && locationZoom) {
+          locationSvg.transition().duration(300).call(locationZoom.scaleBy, 1.5);
+        }
+      });
+      
+      document.getElementById('location-zoom-out').addEventListener('click', function() {
+        if (locationSvg && locationZoom) {
+          locationSvg.transition().duration(300).call(locationZoom.scaleBy, 0.67);
+        }
+      });
+      
+      document.getElementById('location-reset').addEventListener('click', function() {
+        if (locationSvg && locationZoom) {
+          locationSvg.transition().duration(750).call(locationZoom.transform, d3.zoomIdentity);
+        }
+      });
+      
+      document.getElementById('location-animate').addEventListener('click', function() {
+        if (!animationRunning) {
+          animateConnections('#location-chart');
+        }
+      });
+    }
+    
+    // 動畫效果
+    function animateConnections(chartSelector) {
+      animationRunning = true;
+      const lines = d3.select(chartSelector).selectAll('.connection-line');
+      const labels = d3.select(chartSelector).selectAll('.line-label');
+      
+      lines.each(function(d, i) {
+        d3.select(this)
+          .transition()
+          .delay(i * 50)
+          .duration(800)
+          .attr('stroke-width', function() {
+            const currentWidth = parseFloat(d3.select(this).attr('stroke-width'));
+            return currentWidth * 2;
+          })
+          .attr('stroke-opacity', 0.9)
+          .transition()
+          .duration(400)
+          .attr('stroke-width', function() {
+            const currentWidth = parseFloat(d3.select(this).attr('stroke-width'));
+            return currentWidth / 2;
+          })
+          .attr('stroke-opacity', 0.4);
+      });
+      
+      labels.each(function(d, i) {
+        d3.select(this)
+          .transition()
+          .delay(i * 50)
+          .duration(800)
+          .attr('font-size', '12px')
+          .attr('opacity', 1)
+          .transition()
+          .duration(400)
+          .attr('font-size', '9px')
+          .attr('opacity', 0.7);
+      });
+      
+      setTimeout(() => {
+        animationRunning = false;
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

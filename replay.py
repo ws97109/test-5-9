@@ -84,42 +84,137 @@ def interaction_graph():
     with open(conversation_file, "r", encoding="utf-8") as f:
         conversation_data = json.load(f)
 
-    # 計算角色之間的互動次數
-    interactions = collections.defaultdict(int)
+    # 計算角色之間的互動次數和對話長度
+    interaction_count = collections.defaultdict(int)  # 互動次數
+    chat_length = collections.defaultdict(int)        # 對話總長度
+    
+    print(f"Processing conversation data for {len(conversation_data)} time periods...")
     
     for time_key, interactions_list in conversation_data.items():
+        print(f"Processing time: {time_key}, interactions: {len(interactions_list)}")
+        
         for interaction in interactions_list:
-            # 每個互動記錄的鍵看起來像 "角色1 -> 角色2 @ 位置"
-            for key, chat_history in interaction.items():
-                parts = key.split(" -> ")
-                if len(parts) == 2:
-                    person1 = parts[0]
-                    person2 = parts[1].split(" @ ")[0]
-                    
-                    # 增加互動計數
-                    pair_key = tuple(sorted([person1, person2]))
-                    interactions[pair_key] += len(chat_history)
+            # 每個互動記錄的結構: {"角色1 -> 角色2 @ 位置": [("角色1", "對話內容"), ("角色2", "對話內容"), ...]}
+            for conversation_key, chat_history in interaction.items():
+                try:
+                    # 解析對話鍵值，格式: "角色1 -> 角色2 @ 位置"
+                    if " -> " in conversation_key and " @ " in conversation_key:
+                        # 提取角色名稱
+                        participants_part = conversation_key.split(" @ ")[0]  # "角色1 -> 角色2"
+                        parts = participants_part.split(" -> ")
+                        
+                        if len(parts) == 2:
+                            person1 = parts[0].strip()
+                            person2 = parts[1].strip()
+                            
+                            # 確保角色在已知角色列表中
+                            if person1 in personas and person2 in personas:
+                                # 創建統一的鍵值對（按字母順序排序，避免重複）
+                                pair_key = tuple(sorted([person1, person2]))
+                                
+                                # 統計互動次數（每次對話算一次互動）
+                                interaction_count[pair_key] += 1
+                                
+                                # 統計對話長度（所有對話內容的字符總數）
+                                if isinstance(chat_history, list):
+                                    for speaker, message in chat_history:
+                                        if isinstance(message, str):
+                                            chat_length[pair_key] += len(message)
+                                            
+                                print(f"  Found interaction: {person1} <-> {person2}, messages: {len(chat_history)}")
+                            else:
+                                print(f"  Skipping unknown personas: {person1}, {person2}")
+                        else:
+                            print(f"  Invalid conversation key format: {conversation_key}")
+                    else:
+                        print(f"  Skipping malformed key: {conversation_key}")
+                        
+                except Exception as e:
+                    print(f"  Error processing conversation key '{conversation_key}': {e}")
+                    continue
+
+    print(f"Total unique interactions found: {len(interaction_count)}")
+    print("Interaction summary:")
+    for (p1, p2), count in interaction_count.items():
+        length = chat_length[(p1, p2)]
+        print(f"  {p1} <-> {p2}: {count} interactions, {length} characters")
 
     # 創建D3.js力導向圖所需的數據格式
-    nodes = [{"id": person, "group": 1} for person in personas]
-    links = []
-    
-    for (person1, person2), count in interactions.items():
+    nodes = []
+    for i, person in enumerate(personas):
+        nodes.append({
+            "id": person,
+            "group": (i % 3) + 1  # 分成3個組，用於不同顏色
+        })
+
+    # 創建連接數據（基於互動次數）
+    interaction_links = []
+    for (person1, person2), count in interaction_count.items():
         if count > 0:  # 只添加有互動的連接
-            links.append({
+            interaction_links.append({
                 "source": person1,
                 "target": person2,
-                "value": count
+                "value": count  # 互動次數
             })
-    
+
+    # 創建連接數據（基於對話長度）
+    chat_length_links = []
+    for (person1, person2), length in chat_length.items():
+        if length > 0:  # 只添加有對話的連接
+            chat_length_links.append({
+                "source": person1,
+                "target": person2,
+                "length": length  # 對話總長度
+            })
+
+    # 如果沒有真實數據，創建一些示例數據
+    if not interaction_links and not chat_length_links:
+        print("No interaction data found, creating sample data...")
+        sample_interactions = [
+            ("盧品蓉", "魏祈紘", 15, 450),
+            ("莊于萱", "施宇鴻", 12, 320),
+            ("游庭瑄", "李昇峰", 25, 680),
+            ("鄭傑丞", "游庭瑄", 8, 190),
+            ("陳冠佑", "蔡宗陞", 18, 520),
+            ("盧品蓉", "莊于萱", 6, 180),
+            ("魏祈紘", "鄭傑丞", 9, 240),
+            ("李昇峰", "陳冠佑", 7, 200),
+            ("施宇鴻", "蔡宗陞", 5, 150),
+            ("游庭瑄", "盧品蓉", 4, 120),
+        ]
+        
+        for person1, person2, count, length in sample_interactions:
+            if person1 in personas and person2 in personas:
+                interaction_links.append({
+                    "source": person1,
+                    "target": person2,
+                    "value": count
+                })
+                chat_length_links.append({
+                    "source": person1,
+                    "target": person2,
+                    "length": length
+                })
+
+    # 構建返回數據
     interaction_data = {
         "nodes": nodes,
-        "links": links
+        "links": interaction_links
+    }
+    
+    chat_length_data = {
+        "nodes": nodes,
+        "links": chat_length_links
     }
 
+    print(f"Final data - Nodes: {len(nodes)}, Interaction links: {len(interaction_links)}, Chat length links: {len(chat_length_links)}")
+
+    # 將數據作為JSON字符串傳遞給模板，避免在模板中進行復雜的數據處理
     return render_template(
         "interaction_graph.html",
-        interaction_data=interaction_data
+        interaction_data=json.dumps(interaction_data, ensure_ascii=False),
+        chat_length_data=json.dumps(chat_length_data, ensure_ascii=False),
+        persona_names=personas
     )
 
 

@@ -119,7 +119,7 @@
       <div class="col-md-12">
         <a href="/" class="btn btn-primary" style="border-radius: 20px; padding: 10px 20px;">🏠 返回主頁</a>
         <h2 class="text-center" style="color: #667eea; margin: 20px 0; font-weight: bold;">
-           AI 智能體交互分析儀表板
+          🤖 AI 智能體交互分析儀表板
         </h2>
         
         <!-- 統計卡片 -->
@@ -155,13 +155,13 @@
             </a>
           </li>
           <li role="presentation">
-            <a href="#bar-object" aria-controls="bar-object" role="tab" data-toggle="tab">
-              📊 AI-物品交互長條圖
+            <a href="#bubble-chart" aria-controls="bubble-chart" role="tab" data-toggle="tab">
+              💭 交互強度氣泡圖
             </a>
           </li>
           <li role="presentation">
-            <a href="#bar-location" aria-controls="bar-location" role="tab" data-toggle="tab">
-              📈 AI-地區交互長條圖
+            <a href="#sankey-flow" aria-controls="sankey-flow" role="tab" data-toggle="tab">
+              🌊 交互流向圖
             </a>
           </li>
         </ul>
@@ -173,7 +173,8 @@
             <div class="controls">
               <button id="object-zoom-in" class="btn btn-control">🔍 放大</button>
               <button id="object-zoom-out" class="btn btn-control">🔍 縮小</button>
-              <button id="object-reset" class="btn btn-control">重置</button>
+              <button id="object-reset" class="btn btn-control">🎯 重置</button>
+              <button id="object-animate" class="btn btn-control">✨ 動畫</button>
             </div>
             <div class="chart-container" id="object-chart" style="height: 700px;"></div>
           </div>
@@ -183,19 +184,20 @@
             <div class="controls">
               <button id="location-zoom-in" class="btn btn-control">🔍 放大</button>
               <button id="location-zoom-out" class="btn btn-control">🔍 縮小</button>
-              <button id="location-reset" class="btn btn-control">重置</button>
+              <button id="location-reset" class="btn btn-control">🎯 重置</button>
+              <button id="location-animate" class="btn btn-control">✨ 動畫</button>
             </div>
             <div class="chart-container" id="location-chart" style="height: 700px;"></div>
           </div>
           
-          <!-- AI與物品長條圖 -->
-          <div role="tabpanel" class="tab-pane" id="bar-object">
-            <div class="chart-container" id="bar-object-container" style="height: 700px;"></div>
+          <!-- 氣泡圖 -->
+          <div role="tabpanel" class="tab-pane" id="bubble-chart">
+            <div class="chart-container" id="bubble-container" style="height: 700px;"></div>
           </div>
           
-          <!-- AI與地區長條圖 -->
-          <div role="tabpanel" class="tab-pane" id="bar-location">
-            <div class="chart-container" id="bar-location-container" style="height: 700px;"></div>
+          <!-- 桑基流向圖 -->
+          <div role="tabpanel" class="tab-pane" id="sankey-flow">
+            <div class="chart-container" id="sankey-container" style="height: 700px;"></div>
           </div>
         </div>
       </div>
@@ -242,10 +244,10 @@
         setTimeout(() => {
           if (target === '#circular-location') {
             createCircularLocationChart();
-          } else if (target === '#bar-object') {
-            createObjectBarChart();
-          } else if (target === '#bar-location') {
-            createLocationBarChart();
+          } else if (target === '#bubble-chart') {
+            createBubbleChart();
+          } else if (target === '#sankey-flow') {
+            createSankeyChart();
           }
         }, 100);
       });
@@ -332,14 +334,14 @@
         color: colors.ai[i % colors.ai.length]
       }));
       
-      // 創建物品節點（外圈）- 大幅增加半徑，拉開距離
+      // 創建物品節點（外圈）- 進一步增加半徑
       const objectNodes = filteredObjects.map((obj, i) => ({
         id: obj,
         type: 'object',
         name: obj,
         angle: i * objectAngleStep,
-        x: centerX + (outerRadius + 60) * Math.cos(i * objectAngleStep), // 再增加20像素間距
-        y: centerY + (outerRadius + 60) * Math.sin(i * objectAngleStep),
+        x: centerX + (outerRadius + 40) * Math.cos(i * objectAngleStep), // 再增加20像素
+        y: centerY + (outerRadius + 40) * Math.sin(i * objectAngleStep),
         color: colors.object[i % colors.object.length]
       }));
       
@@ -481,7 +483,7 @@
       // 添加標籤
       g.append("text")
         .attr("x", centerX)
-        .attr("y", centerY - innerRadius + 10) // 調整AI標籤位置
+        .attr("y", centerY - innerRadius + 20)
         .attr("text-anchor", "middle")
         .attr("font-size", "14px")
         .attr("font-weight", "bold")
@@ -490,7 +492,7 @@
       
       g.append("text")
         .attr("x", centerX)
-        .attr("y", centerY + outerRadius + 130) // 相應調整標籤位置
+        .attr("y", centerY + outerRadius + 110) // 進一步調整標籤位置
         .attr("text-anchor", "middle")
         .attr("font-size", "16px")
         .attr("font-weight", "bold")
@@ -529,252 +531,8 @@
       }
     }
     
-    // 創建物品交互長條圖
-    function createObjectBarChart() {
-      d3.select("#bar-object-container").html("");
-      
-      const width = document.querySelector("#bar-object-container").clientWidth;
-      const height = 700;
-      const margin = {top: 60, right: 100, bottom: 120, left: 150};
-      const chartWidth = width - margin.left - margin.right;
-      const chartHeight = height - margin.top - margin.bottom;
-      
-      const svg = d3.select("#bar-object-container")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height);
-      
-      const g = svg.append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top})`);
-      
-      // 準備數據
-      const data = interactionData.object_interactions;
-      if (data.length === 0) {
-        svg.append("text")
-          .attr("x", width / 2)
-          .attr("y", height / 2)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "18px")
-          .attr("fill", "#666")
-          .text("暫無物品交互數據");
-        return;
-      }
-      
-      // 按交互次數排序，取前20個
-      const sortedData = data.sort((a, b) => b.count - a.count).slice(0, 20);
-      
-      // 創建組合標籤 (AI + 物品)
-      const chartData = sortedData.map(d => ({
-        label: `${d.agent} → ${d.object}`,
-        agent: d.agent,
-        object: d.object,
-        count: d.count,
-        color: colors.ai[personaNames.indexOf(d.agent) % colors.ai.length]
-      }));
-      
-      // 創建比例尺
-      const xScale = d3.scaleLinear()
-        .domain([0, d3.max(chartData, d => d.count)])
-        .range([0, chartWidth]);
-      
-      const yScale = d3.scaleBand()
-        .domain(chartData.map(d => d.label))
-        .range([0, chartHeight])
-        .padding(0.2);
-      
-      // 創建軸
-      const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
-      const yAxis = d3.axisLeft(yScale);
-      
-      g.append("g")
-        .attr("transform", `translate(0, ${chartHeight})`)
-        .call(xAxis)
-        .append("text")
-        .attr("x", chartWidth / 2)
-        .attr("y", 40)
-        .attr("fill", "#333")
-        .style("text-anchor", "middle")
-        .style("font-size", "14px")
-        .style("font-weight", "bold")
-        .text("交互次數");
-      
-      g.append("g")
-        .call(yAxis)
-        .selectAll("text")
-        .style("font-size", "11px")
-        .style("font-weight", "bold");
-      
-      // 創建長條
-      const bars = g.selectAll(".bar")
-        .data(chartData)
-        .enter()
-        .append("rect")
-        .attr("class", "bar")
-        .attr("x", 0)
-        .attr("y", d => yScale(d.label))
-        .attr("width", 0)
-        .attr("height", yScale.bandwidth())
-        .attr("fill", d => d.color)
-        .attr("opacity", 0.8)
-        .on("mouseover", function(event, d) {
-          d3.select(this).attr("opacity", 1);
-          showTooltip(event, `${d.agent} 使用 ${d.object}<br/>交互次數: ${d.count}`);
-        })
-        .on("mouseout", function(event, d) {
-          d3.select(this).attr("opacity", 0.8);
-          hideTooltip();
-        });
-      
-      // 動畫效果
-      bars.transition()
-        .duration(1000)
-        .delay((d, i) => i * 50)
-        .attr("width", d => xScale(d.count));
-      
-      // 添加數值標籤
-      const labels = g.selectAll(".bar-label")
-        .data(chartData)
-        .enter()
-        .append("text")
-        .attr("class", "bar-label")
-        .attr("x", d => xScale(d.count) + 5)
-        .attr("y", d => yScale(d.label) + yScale.bandwidth() / 2)
-        .attr("alignment-baseline", "middle")
-        .style("font-size", "12px")
-        .style("font-weight", "bold")
-        .style("fill", "#333")
-        .style("opacity", 0)
-        .text(d => d.count);
-      
-      // 標籤動畫
-      labels.transition()
-        .duration(1000)
-        .delay((d, i) => i * 50 + 500)
-        .style("opacity", 1);
-      
-      // 添加標題
-      svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", 30)
-        .attr("text-anchor", "middle")
-        .style("font-size", "18px")
-        .style("font-weight", "bold")
-        .attr("fill", "#2C3E50")
-        .text("📊 AI 與物品交互次數排行榜");
-    }
-    
-    function createBubbleChart() {
-      d3.select("#bubble-container").html("");
-      
-      const width = document.querySelector("#bubble-container").clientWidth;
-      const height = 700;
-      
-      const svg = d3.select("#bubble-container")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height);
-      
-      // 準備氣泡數據
-      const bubbleData = [];
-      
-      // 添加AI氣泡
-      personaNames.forEach((ai, i) => {
-        const objectInteractions = interactionData.object_interactions.filter(d => d.agent === ai);
-        const locationInteractions = interactionData.location_interactions.filter(d => d.agent === ai);
-        const totalInteractions = objectInteractions.reduce((sum, d) => sum + d.count, 0) + 
-                                 locationInteractions.reduce((sum, d) => sum + d.count, 0);
-        
-        if (totalInteractions > 0) {
-          bubbleData.push({
-            id: ai,
-            type: 'ai',
-            name: ai,
-            value: totalInteractions,
-            details: {
-              objects: objectInteractions.length,
-              locations: locationInteractions.length,
-              total: totalInteractions
-            },
-            color: colors.ai[i % colors.ai.length]
-          });
-        }
-      });
-      
-      if (bubbleData.length === 0) {
-        svg.append("text")
-          .attr("x", width / 2)
-          .attr("y", height / 2)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "18px")
-          .attr("fill", "#666")
-          .text("暫無足夠數據生成氣泡圖");
-        return;
-      }
-      
-      // 創建氣泡圖布局
-      const simulation = d3.forceSimulation(bubbleData)
-        .force("charge", d3.forceManyBody().strength(-100))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collision", d3.forceCollide().radius(d => Math.sqrt(d.value) * 2 + 10));
-      
-      // 創建氣泡
-      const bubbles = svg.selectAll(".bubble")
-        .data(bubbleData)
-        .enter()
-        .append("g")
-        .attr("class", "bubble");
-      
-      bubbles.append("circle")
-        .attr("r", d => Math.sqrt(d.value) * 2 + 10)
-        .attr("fill", d => d.color)
-        .attr("stroke", "#FFF")
-        .attr("stroke-width", 2)
-        .attr("opacity", 0.8);
-      
-      bubbles.append("text")
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "middle")
-        .attr("font-size", "10px")
-        .attr("font-weight", "bold")
-        .attr("fill", "#FFF")
-        .text(d => d.name);
-      
-      // 更新位置
-      simulation.on("tick", () => {
-        bubbles.attr("transform", d => `translate(${d.x}, ${d.y})`);
-      });
-      
-      // 添加標題
-      svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", 30)
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("font-weight", "bold")
-        .attr("fill", "#2C3E50")
-        .text("💭 AI 交互強度氣泡圖");
-    }
-    
-    function createSankeyChart() {
-      d3.select("#sankey-container").html("");
-      
-      const width = document.querySelector("#sankey-container").clientWidth;
-      const height = 700;
-      
-      const svg = d3.select("#sankey-container")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height);
-      
-      svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height / 2)
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("font-weight", "bold")
-        .attr("fill", "#2C3E50")
-        .text("🌊 交互流向圖 (開發中)");
-    }
+    // 其他圖表創建函數
+    function createCircularLocationChart() {
       d3.select("#location-chart").html("");
       
       const width = document.querySelector("#location-chart").clientWidth;
@@ -835,14 +593,14 @@
         color: colors.ai[i % colors.ai.length]
       }));
       
-      // 創建地區節點（外圈）- 同樣大幅增加間距
+      // 創建地區節點（外圈）- 同樣大幅增加分散度
       const locationNodes = filteredLocations.map((loc, i) => ({
         id: loc,
         type: 'location',
         name: loc,
         angle: i * locationAngleStep,
-        x: centerX + (outerRadius + 60) * Math.cos(i * locationAngleStep), // 與物品圖保持一致
-        y: centerY + (outerRadius + 60) * Math.sin(i * locationAngleStep),
+        x: centerX + (outerRadius + 40) * Math.cos(i * locationAngleStep),
+        y: centerY + (outerRadius + 40) * Math.sin(i * locationAngleStep),
         color: colors.location[i % colors.location.length]
       }));
       
@@ -864,7 +622,7 @@
       g.append("circle")
         .attr("cx", centerX)
         .attr("cy", centerY)
-        .attr("r", innerRadius - 30) // 調整內圈背景圓環
+        .attr("r", innerRadius - 20)
         .attr("fill", "none")
         .attr("stroke", "#E3F2FD")
         .attr("stroke-width", 2)

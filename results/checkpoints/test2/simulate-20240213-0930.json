@@ -296,8 +296,8 @@
         26
       ]
     },
-    "魏祈紘": {
-      "config_path": "assets/village/agents/魏祈紘/agent.json",
+    "鄭傑丞": {
+      "config_path": "assets/village/agents/鄭傑丞/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -533,10 +533,10 @@
         }
       },
       "chats": [],
-      "currently": "魏祈紘正在撰寫一篇關於低收入社區中產階級化影響的研究論文。",
+      "currently": "鄭傑丞正在撰寫一篇關於低收入社區中產階級化影響的研究論文。",
       "action": {
         "event": {
-          "subject": "魏祈紘",
+          "subject": "鄭傑丞",
           "predicate": "此時",
           "object": "獲取圖書館的最新研究資料",
           "describe": "獲取圖書館的最新研究資料",
@@ -1118,7 +1118,7 @@
           "describe": "研究過去的考題以了解考試形式",
           "address": [
             "the Ville",
-            "約翰遜公園",
+            "大安公園",
             "公園",
             "公園花園"
           ],
@@ -1131,7 +1131,7 @@
           "describe": "正被欣賞研究",
           "address": [
             "the Ville",
-            "約翰遜公園",
+            "大安公園",
             "公園",
             "公園花園"
           ],
@@ -1145,8 +1145,8 @@
         50
       ]
     },
-    "鄭傑丞": {
-      "config_path": "assets/village/agents/鄭傑丞/agent.json",
+    "魏祺紘": {
+      "config_path": "assets/village/agents/魏祺紘/agent.json",
       "status": {
         "poignancy": 0
       },
@@ -1382,10 +1382,10 @@
         }
       },
       "chats": [],
-      "currently": "鄭傑丞正在為他的大學班級做音樂合成項目。他也在上課，學習更多的音樂理論。",
+      "currently": "魏祺紘正在為他的大學班級做音樂合成項目。他也在上課，學習更多的音樂理論。",
       "action": {
         "event": {
-          "subject": "鄭傑丞",
+          "subject": "魏祺紘",
           "predicate": "此時",
           "object": "制作早餐",
           "describe": "制作早餐",

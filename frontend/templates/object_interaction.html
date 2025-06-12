@@ -110,6 +110,14 @@
       font-size: 14px;
       opacity: 0.9;
     }
+
+    .chart-title {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #2C3E50;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 
@@ -154,16 +162,6 @@
               🏠 AI-地區交互圓環圖
             </a>
           </li>
-          <li role="presentation">
-            <a href="#bubble-chart" aria-controls="bubble-chart" role="tab" data-toggle="tab">
-              💭 交互強度氣泡圖
-            </a>
-          </li>
-          <li role="presentation">
-            <a href="#sankey-flow" aria-controls="sankey-flow" role="tab" data-toggle="tab">
-              🌊 交互流向圖
-            </a>
-          </li>
         </ul>
         
         <!-- 頁籤內容 -->
@@ -188,16 +186,6 @@
               <button id="location-animate" class="btn btn-control">✨ 動畫</button>
             </div>
             <div class="chart-container" id="location-chart" style="height: 700px;"></div>
-          </div>
-          
-          <!-- 氣泡圖 -->
-          <div role="tabpanel" class="tab-pane" id="bubble-chart">
-            <div class="chart-container" id="bubble-container" style="height: 700px;"></div>
-          </div>
-          
-          <!-- 桑基流向圖 -->
-          <div role="tabpanel" class="tab-pane" id="sankey-flow">
-            <div class="chart-container" id="sankey-container" style="height: 700px;"></div>
           </div>
         </div>
       </div>
@@ -244,10 +232,6 @@
         setTimeout(() => {
           if (target === '#circular-location') {
             createCircularLocationChart();
-          } else if (target === '#bubble-chart') {
-            createBubbleChart();
-          } else if (target === '#sankey-flow') {
-            createSankeyChart();
           }
         }, 100);
       });
@@ -272,7 +256,7 @@
       document.getElementById('total-interaction-count').textContent = totalInteractions;
     }
     
-    // 改進的圓環圖 - 減少擁擠
+    // 改進的圓環圖 - AI與物品
     function createCircularObjectChart() {
       d3.select("#object-chart").html("");
       
@@ -280,8 +264,8 @@
       const height = 700;
       const centerX = width / 2;
       const centerY = height / 2;
-      const outerRadius = Math.min(width, height) / 2 - 120; // 增加邊距
-      const innerRadius = outerRadius - 120; // 減少圓環寬度
+      const outerRadius = Math.min(width, height) / 2 - 120;
+      const innerRadius = outerRadius - 120;
       
       const svg = d3.select("#object-chart")
         .append("svg")
@@ -291,7 +275,7 @@
       objectSvg = svg;
       
       objectZoom = d3.zoom()
-        .scaleExtent([0.3, 5]) // 允許更大的縮放範圍
+        .scaleExtent([0.3, 5])
         .on("zoom", function(event) {
           g.attr("transform", event.transform);
         });
@@ -334,13 +318,13 @@
         color: colors.ai[i % colors.ai.length]
       }));
       
-      // 創建物品節點（外圈）- 進一步增加半徑
+      // 創建物品節點（外圈）
       const objectNodes = filteredObjects.map((obj, i) => ({
         id: obj,
         type: 'object',
         name: obj,
         angle: i * objectAngleStep,
-        x: centerX + (outerRadius + 40) * Math.cos(i * objectAngleStep), // 再增加20像素
+        x: centerX + (outerRadius + 40) * Math.cos(i * objectAngleStep),
         y: centerY + (outerRadius + 40) * Math.sin(i * objectAngleStep),
         color: colors.object[i % colors.object.length]
       }));
@@ -359,7 +343,7 @@
         };
       }).filter(d => d !== null);
       
-      // 繪製連接線 - 更細，減少視覺干擾
+      // 繪製連接線
       const lines = g.selectAll(".connection-line")
         .data(connections)
         .enter()
@@ -370,8 +354,8 @@
         .attr("x2", d => d.target.x)
         .attr("y2", d => d.target.y)
         .attr("stroke", d => d.source.color)
-        .attr("stroke-width", d => Math.min(Math.sqrt(d.count) + 1, 5)) // 限制最大線寬
-        .attr("stroke-opacity", 0.4) // 降低默認透明度
+        .attr("stroke-width", d => Math.min(Math.sqrt(d.count) + 1, 5))
+        .attr("stroke-opacity", 0.4)
         .on("mouseover", function(event, d) {
           d3.select(this).attr("stroke-opacity", 0.9).attr("stroke-width", Math.sqrt(d.count) * 2 + 2);
           showTooltip(event, `${d.agent} ↔ ${d.object}<br/>交互次數: ${d.count}`);
@@ -381,9 +365,9 @@
           hideTooltip();
         });
       
-      // 只在高頻交互上顯示數字，避免過於擁擠
+      // 只在高頻交互上顯示數字
       const lineLabels = g.selectAll(".line-label")
-        .data(connections.filter(d => d.count > 5)) // 只顯示高頻交互的數字
+        .data(connections.filter(d => d.count > 5))
         .enter()
         .append("text")
         .attr("class", "line-label")
@@ -397,7 +381,7 @@
         .attr("opacity", 0.7)
         .text(d => d.count);
       
-      // 繪製AI節點 - 稍微調小
+      // 繪製AI節點
       const aiGroup = g.selectAll(".ai-node")
         .data(aiNodes)
         .enter()
@@ -406,7 +390,7 @@
         .attr("transform", d => `translate(${d.x}, ${d.y})`);
       
       aiGroup.append("circle")
-        .attr("r", 24) // 稍微增大AI節點
+        .attr("r", 24)
         .attr("fill", d => d.color)
         .attr("stroke", "#FFF")
         .attr("stroke-width", 3)
@@ -432,7 +416,7 @@
         .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
         .text(d => d.name);
       
-      // 繪製物品節點 - 調小並簡化
+      // 繪製物品節點
       const objectGroup = g.selectAll(".object-node")
         .data(objectNodes)
         .enter()
@@ -470,7 +454,6 @@
         .attr("font-weight", "bold")
         .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
         .text(d => {
-          // 更智能的文字處理 - 根據文字長度調整顯示
           if (d.name.length <= 10) {
             return d.name;
           } else if (d.name.length <= 12) {
@@ -492,7 +475,7 @@
       
       g.append("text")
         .attr("x", centerX)
-        .attr("y", centerY + outerRadius + 110) // 進一步調整標籤位置
+        .attr("y", centerY + outerRadius + 110)
         .attr("text-anchor", "middle")
         .attr("font-size", "16px")
         .attr("font-weight", "bold")
@@ -531,7 +514,7 @@
       }
     }
     
-    // 其他圖表創建函數
+    // AI與地區圓環圖
     function createCircularLocationChart() {
       d3.select("#location-chart").html("");
       
@@ -593,7 +576,7 @@
         color: colors.ai[i % colors.ai.length]
       }));
       
-      // 創建地區節點（外圈）- 同樣大幅增加分散度
+      // 創建地區節點（外圈）
       const locationNodes = filteredLocations.map((loc, i) => ({
         id: loc,
         type: 'location',
@@ -719,7 +702,7 @@
       
       locationGroup.append("polygon")
         .attr("points", d => {
-          const size = 26; // 再次增加六邊形大小
+          const size = 26;
           const points = [];
           for (let i = 0; i < 6; i++) {
             const angle = (i * Math.PI) / 3;
@@ -773,7 +756,6 @@
         .attr("font-weight", "bold")
         .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.7)")
         .text(d => {
-          // 更智能的文字處理
           if (d.name.length <= 8) {
             return d.name;
           } else if (d.name.length <= 10) {
@@ -834,119 +816,6 @@
       }
     }
     
-    function createBubbleChart() {
-      d3.select("#bubble-container").html("");
-      
-      const width = document.querySelector("#bubble-container").clientWidth;
-      const height = 700;
-      
-      const svg = d3.select("#bubble-container")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height);
-      
-      // 準備氣泡數據
-      const bubbleData = [];
-      
-      // 添加AI氣泡
-      personaNames.forEach((ai, i) => {
-        const objectInteractions = interactionData.object_interactions.filter(d => d.agent === ai);
-        const locationInteractions = interactionData.location_interactions.filter(d => d.agent === ai);
-        const totalInteractions = objectInteractions.reduce((sum, d) => sum + d.count, 0) + 
-                                 locationInteractions.reduce((sum, d) => sum + d.count, 0);
-        
-        if (totalInteractions > 0) {
-          bubbleData.push({
-            id: ai,
-            type: 'ai',
-            name: ai,
-            value: totalInteractions,
-            details: {
-              objects: objectInteractions.length,
-              locations: locationInteractions.length,
-              total: totalInteractions
-            },
-            color: colors.ai[i % colors.ai.length]
-          });
-        }
-      });
-      
-      if (bubbleData.length === 0) {
-        svg.append("text")
-          .attr("x", width / 2)
-          .attr("y", height / 2)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "18px")
-          .attr("fill", "#666")
-          .text("暫無足夠數據生成氣泡圖");
-        return;
-      }
-      
-      // 創建氣泡圖布局
-      const simulation = d3.forceSimulation(bubbleData)
-        .force("charge", d3.forceManyBody().strength(-100))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collision", d3.forceCollide().radius(d => Math.sqrt(d.value) * 2 + 10));
-      
-      // 創建氣泡
-      const bubbles = svg.selectAll(".bubble")
-        .data(bubbleData)
-        .enter()
-        .append("g")
-        .attr("class", "bubble");
-      
-      bubbles.append("circle")
-        .attr("r", d => Math.sqrt(d.value) * 2 + 10)
-        .attr("fill", d => d.color)
-        .attr("stroke", "#FFF")
-        .attr("stroke-width", 2)
-        .attr("opacity", 0.8);
-      
-      bubbles.append("text")
-        .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "middle")
-        .attr("font-size", "10px")
-        .attr("font-weight", "bold")
-        .attr("fill", "#FFF")
-        .text(d => d.name);
-      
-      // 更新位置
-      simulation.on("tick", () => {
-        bubbles.attr("transform", d => `translate(${d.x}, ${d.y})`);
-      });
-      
-      // 添加標題
-      svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", 30)
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("font-weight", "bold")
-        .attr("fill", "#2C3E50")
-        .text("💭 AI 交互強度氣泡圖");
-    }
-    
-    function createSankeyChart() {
-      d3.select("#sankey-container").html("");
-      
-      const width = document.querySelector("#sankey-container").clientWidth;
-      const height = 700;
-      
-      const svg = d3.select("#sankey-container")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height);
-      
-      svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height / 2)
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("font-weight", "bold")
-        .attr("fill", "#2C3E50")
-        .text("🌊 交互流向圖 (開發中)");
-    }
-    
     // 輔助函數
     function showTooltip(event, content) {
       tooltip.transition()
@@ -961,15 +830,6 @@
       tooltip.transition()
         .duration(500)
         .style("opacity", 0);
-    }
-    
-    function getIcon(type) {
-      switch(type) {
-        case 'ai': return '🤖';
-        case 'object': return '🔧';
-        case 'location': return '🏠';
-        default: return '•';
-      }
     }
     
     // 綁定控制按鈕事件
